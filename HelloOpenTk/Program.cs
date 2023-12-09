@@ -11,3 +11,11 @@ internal static class Program
         }
     }
 }
+
+/*
+
+https://opentk.net/index.html
+https://opentk.net/learn/index.html 
+https://github.com/opentk/LearnOpenTK/tree/master 
+  
+ */
