@@ -1,7 +1,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace HelloOpenTk;
+namespace Common;
 
 // A simple class meant to help create shaders.
 public sealed class Shader : IDisposable

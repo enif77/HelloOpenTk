@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloOpenTk", "HelloOpenTk\HelloOpenTk.csproj", "{0DDB0156-2463-4D27-B094-92C0FEA6717A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsTestTk", "LightsTestTk\LightsTestTk.csproj", "{0E2C0E28-D5B9-4CDE-8DC9-816B30D79BFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{DDB8C119-166B-4941-AA5C-126394FC02A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{0DDB0156-2463-4D27-B094-92C0FEA6717A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DDB0156-2463-4D27-B094-92C0FEA6717A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DDB0156-2463-4D27-B094-92C0FEA6717A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E2C0E28-D5B9-4CDE-8DC9-816B30D79BFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E2C0E28-D5B9-4CDE-8DC9-816B30D79BFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E2C0E28-D5B9-4CDE-8DC9-816B30D79BFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E2C0E28-D5B9-4CDE-8DC9-816B30D79BFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDB8C119-166B-4941-AA5C-126394FC02A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDB8C119-166B-4941-AA5C-126394FC02A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDB8C119-166B-4941-AA5C-126394FC02A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDB8C119-166B-4941-AA5C-126394FC02A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
