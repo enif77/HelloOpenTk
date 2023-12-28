@@ -1,10 +1,11 @@
-using System;
-using Common;
+using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
+
+using Common;
 
 
 namespace LightsTestTk;
@@ -160,6 +161,14 @@ public class Window : GameWindow
     {
         base.OnRenderFrame(e);
 
+        // MacOS needs to update the viewport on each frame.
+        // FramebufferSize returns correct values, only Cocoa visual render size is halved.
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            var cs = ClientSize;
+            GL.Viewport(0, 0, cs.X * 2, cs.Y * 2);
+        }
+        
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         GL.BindVertexArray(_vaoModel);
