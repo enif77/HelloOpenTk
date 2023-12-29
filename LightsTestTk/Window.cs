@@ -75,14 +75,9 @@ public class Window : GameWindow
         new Vector3(-1.3f, 1.0f, -1.5f)
     };
 
+    private readonly DirectionalLight _directionalLight = new DirectionalLight();
+    
     // We need the point lights' positions to draw the lamps and to get light the materials properly
-    // private readonly Vector3[] _pointLightPositions =
-    // {
-    //     new Vector3(0.7f, 0.2f, 2.0f),
-    //     new Vector3(2.3f, -3.3f, -4.0f),
-    //     new Vector3(-4.0f, 2.0f, -12.0f),
-    //     new Vector3(0.0f, 0.0f, -3.0f)
-    // };
     private readonly PointLight[] _pointLights =
     [
         new PointLight(0)
@@ -213,22 +208,14 @@ public class Window : GameWindow
            by defining light types as classes and set their values in there, or by using a more efficient uniform approach
            by using 'Uniform buffer objects', but that is something we'll discuss in the 'Advanced GLSL' tutorial.
         */
+        
         // Directional light
-        _lightingShader.SetVector3("dirLight.direction", new Vector3(-0.2f, -1.0f, -0.3f));
-        _lightingShader.SetVector3("dirLight.ambient", new Vector3(0.05f, 0.05f, 0.05f));
-        _lightingShader.SetVector3("dirLight.diffuse", new Vector3(0.4f, 0.4f, 0.4f));
-        _lightingShader.SetVector3("dirLight.specular", new Vector3(0.5f, 0.5f, 0.5f));
+        UpdateDirectionalLightUniforms(_lightingShader, _directionalLight);
 
         // Point lights
         foreach (var pointLight in _pointLights)
         {
-            _lightingShader.SetVector3(pointLight.PositionUniformName, pointLight.Position);
-            _lightingShader.SetVector3(pointLight.AmbientUniformName, pointLight.Ambient);
-            _lightingShader.SetVector3(pointLight.DiffuseUniformName, pointLight.Diffuse);
-            _lightingShader.SetVector3(pointLight.SpecularUniformName, pointLight.Specular);
-            _lightingShader.SetFloat(pointLight.ConstantUniformName, pointLight.Constant);
-            _lightingShader.SetFloat(pointLight.LinearUniformName, pointLight.Linear);
-            _lightingShader.SetFloat(pointLight.QuadraticUniformName, pointLight.Quadratic);
+            UpdatePointLightUniforms(_lightingShader, pointLight);
         }
 
         // Spot light
@@ -272,6 +259,25 @@ public class Window : GameWindow
         }
 
         SwapBuffers();
+    }
+
+    private void UpdateDirectionalLightUniforms(Shader lightingShader, DirectionalLight directionalLight)
+    {
+        lightingShader.SetVector3(directionalLight.DirectionUniformName, _directionalLight.Direction);
+        lightingShader.SetVector3(directionalLight.AmbientUniformName, _directionalLight.Ambient);
+        lightingShader.SetVector3(directionalLight.DiffuseUniformName, _directionalLight.Diffuse);
+        lightingShader.SetVector3(directionalLight.SpecularUniformName, _directionalLight.Specular);
+    }
+
+    private void UpdatePointLightUniforms(Shader lightingShader, PointLight pointLight)
+    {
+        lightingShader.SetVector3(pointLight.PositionUniformName, pointLight.Position);
+        lightingShader.SetVector3(pointLight.AmbientUniformName, pointLight.Ambient);
+        lightingShader.SetVector3(pointLight.DiffuseUniformName, pointLight.Diffuse);
+        lightingShader.SetVector3(pointLight.SpecularUniformName, pointLight.Specular);
+        lightingShader.SetFloat(pointLight.ConstantUniformName, pointLight.Constant);
+        lightingShader.SetFloat(pointLight.LinearUniformName, pointLight.Linear);
+        lightingShader.SetFloat(pointLight.QuadraticUniformName, pointLight.Quadratic);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs e)

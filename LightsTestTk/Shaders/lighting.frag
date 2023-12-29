@@ -6,6 +6,7 @@ struct Material {
     sampler2D specular;
     float     shininess;
 };
+
 //This is the directional light struct, where we only need the directions
 struct DirLight {
     vec3 direction;
@@ -14,7 +15,8 @@ struct DirLight {
     vec3 diffuse;
     vec3 specular;
 };
-uniform DirLight dirLight;
+uniform DirLight directionalLight;
+
 //This is our pointlight where we need the position aswell as the constants defining the attenuation of the light.
 struct PointLight {
     vec3 position;
@@ -30,6 +32,7 @@ struct PointLight {
 //We have a total of 4 point lights now, so we define a preprossecor directive to tell the gpu the size of our point light array
 #define NR_POINT_LIGHTS 4
 uniform PointLight pointLights[NR_POINT_LIGHTS];
+
 //This is our spotlight where we need the position, attenuation along with the cutoff and the outer cutoff. Plus the direction of the light
 struct SpotLight{
     vec3  position;
@@ -70,7 +73,7 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
 
     //phase 1: Directional lighting
-    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    vec3 result = CalcDirLight(directionalLight, norm, viewDir);
     //phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
@@ -116,6 +119,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     specular *= attenuation;
     return (ambient + diffuse + specular);
 } 
+
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
 
