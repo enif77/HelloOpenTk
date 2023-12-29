@@ -76,6 +76,7 @@ public class Window : GameWindow
     };
 
     private readonly DirectionalLight _directionalLight = new DirectionalLight();
+    private readonly SpotLight _spotLight = new SpotLight();
     
     // We need the point lights' positions to draw the lamps and to get light the materials properly
     private readonly PointLight[] _pointLights =
@@ -190,6 +191,7 @@ public class Window : GameWindow
 
         _diffuseMap.Use(TextureUnit.Texture0);
         _specularMap.Use(TextureUnit.Texture1);
+        
         _lightingShader.Use();
 
         _lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
@@ -219,16 +221,9 @@ public class Window : GameWindow
         }
 
         // Spot light
-        _lightingShader.SetVector3("spotLight.position", _camera.Position);
-        _lightingShader.SetVector3("spotLight.direction", _camera.Front);
-        _lightingShader.SetVector3("spotLight.ambient", new Vector3(0.0f, 0.0f, 0.0f));
-        _lightingShader.SetVector3("spotLight.diffuse", new Vector3(1.0f, 1.0f, 1.0f));
-        _lightingShader.SetVector3("spotLight.specular", new Vector3(1.0f, 1.0f, 1.0f));
-        _lightingShader.SetFloat("spotLight.constant", 1.0f);
-        _lightingShader.SetFloat("spotLight.linear", 0.09f);
-        _lightingShader.SetFloat("spotLight.quadratic", 0.032f);
-        _lightingShader.SetFloat("spotLight.cutOff", MathF.Cos(MathHelper.DegreesToRadians(12.5f)));
-        _lightingShader.SetFloat("spotLight.outerCutOff", MathF.Cos(MathHelper.DegreesToRadians(17.5f)));
+        _spotLight.Position = _camera.Position;
+        _spotLight.Direction = _camera.Front;
+        UpdateSpotLightUniforms(_lightingShader, _spotLight);
 
         for (int i = 0; i < _cubePositions.Length; i++)
         {
@@ -259,6 +254,20 @@ public class Window : GameWindow
         }
 
         SwapBuffers();
+    }
+
+    private void UpdateSpotLightUniforms(Shader lightingShader, SpotLight spotLight)
+    {
+        lightingShader.SetVector3(spotLight.PositionUniformName, spotLight.Position);
+        lightingShader.SetVector3(spotLight.DirectionUniformName, spotLight.Direction);
+        lightingShader.SetVector3(spotLight.AmbientUniformName, spotLight.Ambient);
+        lightingShader.SetVector3(spotLight.DiffuseUniformName, spotLight.Diffuse);
+        lightingShader.SetVector3(spotLight.SpecularUniformName, spotLight.Specular);
+        lightingShader.SetFloat(spotLight.ConstantUniformName, spotLight.Constant);
+        lightingShader.SetFloat(spotLight.LinearUniformName, spotLight.Linear);
+        lightingShader.SetFloat(spotLight.QuadraticUniformName, spotLight.Quadratic);
+        lightingShader.SetFloat(spotLight.CutOffUniformName, spotLight.CutOff);
+        lightingShader.SetFloat(spotLight.OuterCutOffUniformName, spotLight.OuterCutOff);
     }
 
     private void UpdateDirectionalLightUniforms(Shader lightingShader, DirectionalLight directionalLight)
