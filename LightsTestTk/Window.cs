@@ -6,6 +6,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 
 using Common;
+using LightsTestTk.Models;
 
 
 namespace LightsTestTk;
@@ -75,13 +76,32 @@ public class Window : GameWindow
     };
 
     // We need the point lights' positions to draw the lamps and to get light the materials properly
-    private readonly Vector3[] _pointLightPositions =
-    {
-        new Vector3(0.7f, 0.2f, 2.0f),
-        new Vector3(2.3f, -3.3f, -4.0f),
-        new Vector3(-4.0f, 2.0f, -12.0f),
-        new Vector3(0.0f, 0.0f, -3.0f)
-    };
+    // private readonly Vector3[] _pointLightPositions =
+    // {
+    //     new Vector3(0.7f, 0.2f, 2.0f),
+    //     new Vector3(2.3f, -3.3f, -4.0f),
+    //     new Vector3(-4.0f, 2.0f, -12.0f),
+    //     new Vector3(0.0f, 0.0f, -3.0f)
+    // };
+    private readonly PointLight[] _pointLights =
+    [
+        new PointLight(0)
+        {
+            Position = new Vector3(0.7f, 0.2f, 2.0f),
+        },
+        new PointLight(1)
+        {
+            Position = new Vector3(2.3f, -3.3f, -4.0f),
+        },
+        new PointLight(2)
+        {
+            Position = new Vector3(-4.0f, 2.0f, -12.0f),
+        },
+        new PointLight(3)
+        {
+            Position = new Vector3(0.0f, 0.0f, -3.0f),
+        }
+    ];
 
     private int _vertexBufferObject;
 
@@ -200,15 +220,15 @@ public class Window : GameWindow
         _lightingShader.SetVector3("dirLight.specular", new Vector3(0.5f, 0.5f, 0.5f));
 
         // Point lights
-        for (int i = 0; i < _pointLightPositions.Length; i++)
+        foreach (var pointLight in _pointLights)
         {
-            _lightingShader.SetVector3($"pointLights[{i}].position", _pointLightPositions[i]);
-            _lightingShader.SetVector3($"pointLights[{i}].ambient", new Vector3(0.05f, 0.05f, 0.05f));
-            _lightingShader.SetVector3($"pointLights[{i}].diffuse", new Vector3(0.8f, 0.8f, 0.8f));
-            _lightingShader.SetVector3($"pointLights[{i}].specular", new Vector3(1.0f, 1.0f, 1.0f));
-            _lightingShader.SetFloat($"pointLights[{i}].constant", 1.0f);
-            _lightingShader.SetFloat($"pointLights[{i}].linear", 0.09f);
-            _lightingShader.SetFloat($"pointLights[{i}].quadratic", 0.032f);
+            _lightingShader.SetVector3(pointLight.PositionUniformName, pointLight.Position);
+            _lightingShader.SetVector3(pointLight.AmbientUniformName, pointLight.Ambient);
+            _lightingShader.SetVector3(pointLight.DiffuseUniformName, pointLight.Diffuse);
+            _lightingShader.SetVector3(pointLight.SpecularUniformName, pointLight.Specular);
+            _lightingShader.SetFloat(pointLight.ConstantUniformName, pointLight.Constant);
+            _lightingShader.SetFloat(pointLight.LinearUniformName, pointLight.Linear);
+            _lightingShader.SetFloat(pointLight.QuadraticUniformName, pointLight.Quadratic);
         }
 
         // Spot light
@@ -239,11 +259,12 @@ public class Window : GameWindow
 
         _lampShader.SetMatrix4("view", _camera.GetViewMatrix());
         _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+        
         // We use a loop to draw all the lights at the proper position
-        for (int i = 0; i < _pointLightPositions.Length; i++)
+        foreach (var pointLight in _pointLights)
         {
-            Matrix4 lampMatrix = Matrix4.CreateScale(0.2f);
-            lampMatrix = lampMatrix * Matrix4.CreateTranslation(_pointLightPositions[i]);
+            var lampMatrix = Matrix4.CreateScale(0.2f);
+            lampMatrix = lampMatrix * Matrix4.CreateTranslation(pointLight.Position);
 
             _lampShader.SetMatrix4("model", lampMatrix);
 
