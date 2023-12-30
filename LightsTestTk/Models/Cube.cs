@@ -60,6 +60,11 @@ public class Cube : IGameObject
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
     };
     
+    /// <summary>
+    /// Indices count = number of triangles * number of vertices per triangle.
+    /// </summary>
+    public int IndicesCount { get; }
+    
     public int VertexBufferObject { get; set; }
     public int VertexArrayObject { get; set; }
 
@@ -67,6 +72,9 @@ public class Cube : IGameObject
     public Cube(int id)
     {
         Id = id;
+        
+        // 8 = 3 (position) + 3 (normal) + 2 (texture coords)
+        IndicesCount = Vertices.Length / 8;
         
         VertexBufferObject = -1;
         VertexArrayObject = -1;

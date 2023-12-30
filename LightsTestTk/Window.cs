@@ -198,7 +198,7 @@ public class Window : GameWindow
             _lightingShader.SetMatrix4("model", model);
 
             // 36 = 6 sides * 2 triangles * 3 vertices.
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, cube.IndicesCount);
             
             cubeIndex++;
         }
@@ -219,7 +219,7 @@ public class Window : GameWindow
 
             _lampShader.SetMatrix4("model", lampMatrix);
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _lampCube.IndicesCount);
         }
 
         SwapBuffers();
