@@ -15,66 +15,22 @@ namespace LightsTestTk;
 // with several point lights
 public class Window : GameWindow
 {
-    private readonly float[] _vertices =
+    private readonly Cube[] _cubes = new[]
     {
-        // Positions          Normals              Texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
+        new Cube(0) { Position = new Vector3(0.0f, 0.0f, 0.0f) },
+        new Cube(1) { Position = new Vector3(2.0f, 5.0f, -15.0f) },
+        new Cube(2) { Position = new Vector3(-1.5f, -2.2f, -2.5f) },
+        new Cube(3) { Position = new Vector3(-3.8f, -2.0f, -12.3f) },
+        new Cube(4) { Position = new Vector3(2.4f, -0.4f, -3.5f) },
+        new Cube(5) { Position = new Vector3(-1.7f, 3.0f, -7.5f) },
+        new Cube(6) { Position = new Vector3(1.3f, -2.0f, -2.5f) },
+        new Cube(7) { Position = new Vector3(1.5f, 2.0f, -2.5f) },
+        new Cube(8) { Position = new Vector3(1.5f, 0.2f, -1.5f) },
+        new Cube(9) { Position = new Vector3(-1.3f, 1.0f, -1.5f) }
     };
-
-    private readonly Vector3[] _cubePositions =
-    {
-        new Vector3(0.0f, 0.0f, 0.0f),
-        new Vector3(2.0f, 5.0f, -15.0f),
-        new Vector3(-1.5f, -2.2f, -2.5f),
-        new Vector3(-3.8f, -2.0f, -12.3f),
-        new Vector3(2.4f, -0.4f, -3.5f),
-        new Vector3(-1.7f, 3.0f, -7.5f),
-        new Vector3(1.3f, -2.0f, -2.5f),
-        new Vector3(1.5f, 2.0f, -2.5f),
-        new Vector3(1.5f, 0.2f, -1.5f),
-        new Vector3(-1.3f, 1.0f, -1.5f)
-    };
-
+    
+    private readonly Cube _lampCube = new Cube(-1);  // Cube.Id = -1 means it's a lamp.
+    
     private readonly DirectionalLight _directionalLight = new DirectionalLight();
     private readonly SpotLight _spotLight = new SpotLight();
     
@@ -99,7 +55,7 @@ public class Window : GameWindow
         }
     ];
 
-    private int _vertexBufferObject;
+    //private int _vertexBufferObject;
 
     private int _vaoModel;
 
@@ -119,11 +75,13 @@ public class Window : GameWindow
 
     private Vector2 _lastPos;
 
+    
     public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
         : base(gameWindowSettings, nativeWindowSettings)
     {
     }
 
+    
     protected override void OnLoad()
     {
         base.OnLoad();
@@ -132,10 +90,13 @@ public class Window : GameWindow
 
         GL.Enable(EnableCap.DepthTest);
 
-        _vertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-
+        foreach (var cube in _cubes)
+        {
+            cube.VertexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, cube.Vertices.Length * sizeof(float), cube.Vertices, BufferUsageHint.StaticDraw);    
+        }
+        
         _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
         _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             
@@ -224,15 +185,22 @@ public class Window : GameWindow
         _spotLight.Position = _camera.Position;
         _spotLight.Direction = _camera.Front;
         UpdateSpotLightUniforms(_lightingShader, _spotLight);
-
-        for (int i = 0; i < _cubePositions.Length; i++)
+        
+        // Draw the cubes
+        var cubeIndex = 0;
+        foreach (var cube in _cubes)
         {
-            Matrix4 model = Matrix4.CreateTranslation(_cubePositions[i]);
-            float angle = 20.0f * i;
+            GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
+            
+            Matrix4 model = Matrix4.CreateTranslation(cube.Position);
+            float angle = 20.0f * cubeIndex;
             model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
             _lightingShader.SetMatrix4("model", model);
 
+            // 36 = 6 sides * 2 triangles * 3 vertices.
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            
+            cubeIndex++;
         }
 
         GL.BindVertexArray(_vaoLamp);
@@ -243,6 +211,7 @@ public class Window : GameWindow
         _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
         
         // We use a loop to draw all the lights at the proper position
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _lampCube.VertexBufferObject); // All lamps use the same VBO.
         foreach (var pointLight in _pointLights)
         {
             var lampMatrix = Matrix4.CreateScale(0.2f);
