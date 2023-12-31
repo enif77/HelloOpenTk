@@ -69,8 +69,8 @@ public class Skybox : IGameObject
     {
         Id = id;
         
-        // 5 = 3 (position) + 2 (texture coords)
-        IndicesCount = Vertices.Length / 5;
+        // 36 = 6 sides * 2 triangles per side * 3 vertices per triangle.
+        IndicesCount = 36;
         
         VertexBufferObject = -1;
         VertexArrayObject = -1;

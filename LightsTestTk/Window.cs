@@ -56,7 +56,6 @@ public class Window : GameWindow
     ];
 
     // Cubes.
-    private int _vaoModel;
     private Shader _lightingShader;
     private Texture _diffuseMap;
     private Texture _specularMap;
@@ -89,10 +88,17 @@ public class Window : GameWindow
         
         GL.Enable(EnableCap.DepthTest);
 
-        // Generate skybox VBO.
+        // Load shaders.
+        _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
+        _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+        _skyboxShader = new Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
+        
+        // Generate skybox VBO and VAO.
         _skybox.VertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, _skybox.Vertices.Length * sizeof(float), _skybox.Vertices, BufferUsageHint.StaticDraw);
+        _skybox.VertexArrayObject = GenerateVAOForPosTexVBOs();
+        
         
         // Generate cube VBOs.
         foreach (var cube in _cubes)
@@ -102,40 +108,13 @@ public class Window : GameWindow
             GL.BufferData(BufferTarget.ArrayBuffer, cube.Vertices.Length * sizeof(float), cube.Vertices, BufferUsageHint.StaticDraw);    
         }
         
-        // Load shaders.
-        _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
-        _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-        _skyboxShader = new Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
-        
+        // Generate VAO for cubes.
+        var cubeVao = GenerateVAOForPosNormTexVBOs();
+        foreach (var cube in _cubes)
         {
-            _skybox.VertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_skybox.VertexArrayObject);
-
-            var positionLocation = _skyboxShader.GetAttribLocation("aPos");
-            GL.EnableVertexAttribArray(positionLocation);
-            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-            
-            var texCoordLocation = _skyboxShader.GetAttribLocation("aTexCoords");
-            GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            cube.VertexArrayObject = cubeVao;
         }
         
-        {
-            _vaoModel = GL.GenVertexArray();
-            GL.BindVertexArray(_vaoModel);
-
-            var positionLocation = _lightingShader.GetAttribLocation("aPos");
-            GL.EnableVertexAttribArray(positionLocation);
-            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
-
-            var normalLocation = _lightingShader.GetAttribLocation("aNormal");
-            GL.EnableVertexAttribArray(normalLocation);
-            GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-
-            var texCoordLocation = _lightingShader.GetAttribLocation("aTexCoords");
-            GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-        }
 
         {
             _vaoLamp = GL.GenVertexArray();
@@ -154,6 +133,46 @@ public class Window : GameWindow
 
         CursorState = CursorState.Grabbed;
     }
+
+    private int GenerateVAOForPosTexVBOs()
+    {
+        var vao = GL.GenVertexArray();
+        
+        GL.BindVertexArray(vao);
+
+        var positionLocation = _skyboxShader.GetAttribLocation("aPos");
+        GL.EnableVertexAttribArray(positionLocation);
+        GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            
+        var texCoordLocation = _skyboxShader.GetAttribLocation("aTexCoords");
+        GL.EnableVertexAttribArray(texCoordLocation);
+        GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+
+        return vao;
+    }
+
+    
+    private int GenerateVAOForPosNormTexVBOs()
+    {
+        var vao = GL.GenVertexArray();
+        
+        GL.BindVertexArray(vao);
+
+        var positionLocation = _lightingShader.GetAttribLocation("aPos");
+        GL.EnableVertexAttribArray(positionLocation);
+        GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+
+        var normalLocation = _lightingShader.GetAttribLocation("aNormal");
+        GL.EnableVertexAttribArray(normalLocation);
+        GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
+
+        var texCoordLocation = _lightingShader.GetAttribLocation("aTexCoords");
+        GL.EnableVertexAttribArray(texCoordLocation);
+        GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+        
+        return vao;
+    }
+    
 
     protected override void OnRenderFrame(FrameEventArgs e)
     {
@@ -179,8 +198,6 @@ public class Window : GameWindow
 
     private void RenderCubes()
     {
-        GL.BindVertexArray(_vaoModel);
-
         _diffuseMap.Use(TextureUnit.Texture0);
         _specularMap.Use(TextureUnit.Texture1);
         
@@ -221,8 +238,9 @@ public class Window : GameWindow
         var cubeIndex = 0;
         foreach (var cube in _cubes)
         {
+            GL.BindVertexArray(cube.VertexArrayObject);
             GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
-            
+                
             Matrix4 model = Matrix4.CreateTranslation(cube.Position);
             float angle = 20.0f * cubeIndex;
             model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
