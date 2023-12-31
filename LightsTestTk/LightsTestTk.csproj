@@ -10,6 +10,12 @@
     <ItemGroup>
         <None Include="Resources/**" CopyToOutputDirectory="PreserveNewest" />
         <None Include="Shaders/**" CopyToOutputDirectory="PreserveNewest" />
+        <None Update="Shaders\skybox.vert">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Shaders\skybox.frag">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

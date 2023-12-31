@@ -55,24 +55,24 @@ public class Window : GameWindow
         }
     ];
 
-    //private int _vertexBufferObject;
-
+    // Cubes.
     private int _vaoModel;
-
-    private int _vaoLamp;
-
-    private Shader _lampShader;
-
     private Shader _lightingShader;
-
     private Texture _diffuseMap;
-
     private Texture _specularMap;
-
+    
+    // Lamps.
+    private int _vaoLamp;
+    private Shader _lampShader;
+    
+    // Skybox.
+    private int _vaoSkybox;
+    private Shader _skyboxShader;
+    private Texture _skyboxTexture;
+    private readonly Skybox _skybox = new Skybox(0);
+    
     private Camera _camera;
-
     private bool _firstMove = true;
-
     private Vector2 _lastPos;
 
     
@@ -87,9 +87,15 @@ public class Window : GameWindow
         base.OnLoad();
 
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
+        
         GL.Enable(EnableCap.DepthTest);
 
+        // Generate skybox VBO.
+        _skybox.VertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
+        GL.BufferData(BufferTarget.ArrayBuffer, _skybox.Vertices.Length * sizeof(float), _skybox.Vertices, BufferUsageHint.StaticDraw);
+        
+        // Generate cube VBOs.
         foreach (var cube in _cubes)
         {
             cube.VertexBufferObject = GL.GenBuffer();
@@ -97,9 +103,24 @@ public class Window : GameWindow
             GL.BufferData(BufferTarget.ArrayBuffer, cube.Vertices.Length * sizeof(float), cube.Vertices, BufferUsageHint.StaticDraw);    
         }
         
+        // Load shaders.
         _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
         _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+        _skyboxShader = new Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
+        
+        {
+            _vaoSkybox = GL.GenVertexArray();
+            GL.BindVertexArray(_vaoSkybox);
+
+            var positionLocation = _skyboxShader.GetAttribLocation("aPos");
+            GL.EnableVertexAttribArray(positionLocation);
+            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
             
+            var texCoordLocation = _skyboxShader.GetAttribLocation("aTexCoords");
+            GL.EnableVertexAttribArray(texCoordLocation);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+        }
+        
         {
             _vaoModel = GL.GenVertexArray();
             GL.BindVertexArray(_vaoModel);
@@ -128,6 +149,7 @@ public class Window : GameWindow
 
         _diffuseMap = Texture.LoadFromFile("Resources/container2.png");
         _specularMap = Texture.LoadFromFile("Resources/container2_specular.png");
+        _skyboxTexture = Texture.LoadFromFile("Resources/SKYBOX.jpg");
 
         _camera = new Camera(Vector3.UnitZ * 3, Size.X / (float)Size.Y);
 
@@ -148,6 +170,10 @@ public class Window : GameWindow
         
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+        
+        RenderSkybox();
+        
+        
         GL.BindVertexArray(_vaoModel);
 
         _diffuseMap.Use(TextureUnit.Texture0);
@@ -203,6 +229,7 @@ public class Window : GameWindow
             cubeIndex++;
         }
 
+        
         GL.BindVertexArray(_vaoLamp);
 
         _lampShader.Use();
@@ -222,8 +249,35 @@ public class Window : GameWindow
             GL.DrawArrays(PrimitiveType.Triangles, 0, _lampCube.IndicesCount);
         }
 
+        
         SwapBuffers();
     }
+
+
+    private void RenderSkybox()
+    {
+        GL.Disable(EnableCap.DepthTest);
+        
+        GL.BindVertexArray(_vaoSkybox);
+        _skyboxTexture.Use(TextureUnit.Texture0);
+        _skyboxShader.Use();
+        
+        // Set the texture unit for the sampler in the fragment shader.
+        _skyboxShader.SetInt("material.diffuse", 0);
+        
+        _skyboxShader.SetMatrix4("view", _camera.GetViewMatrix());
+        _skyboxShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+        
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
+
+        var lampMatrix = Matrix4.CreateTranslation(0, 0, 0);
+        _skyboxShader.SetMatrix4("model", lampMatrix);
+
+        GL.DrawArrays(PrimitiveType.Triangles, 0, _skybox.IndicesCount);
+        
+        GL.Enable(EnableCap.DepthTest);
+    }
+
 
     private void UpdateSpotLightUniforms(Shader lightingShader, SpotLight spotLight)
     {
