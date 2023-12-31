@@ -13,12 +13,13 @@ public class Skybox : IGameObject
         // Each side has 2 triangles, each triangle has 3 vertices.
         
         // Positions          Texture coords
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.25f, 1f / 3f,  // Front face.
+         0.5f, -0.5f, -0.5f,  0.5f,  1f / 3f,
+         0.5f,  0.5f, -0.5f,  0.5f,  2f / 3f,
+         
+         0.5f,  0.5f, -0.5f,  0.5f,  2f / 3f,
+        -0.5f,  0.5f, -0.5f,  0.25f, 2f / 3f,
+        -0.5f, -0.5f, -0.5f,  0.25f, 1f / 3f,
     
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
          0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
