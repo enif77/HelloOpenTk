@@ -12,10 +12,13 @@ public static class Program
         {
             //ClientSize = new Vector2i(800, 600),
             ClientSize = new Vector2i(1280, 800),
+            //ClientSize = new Vector2i(3440, 1440),
             
             Title = "LearnOpenTK - Multiple lights",
             // This is needed to run on macos
             Flags = ContextFlags.ForwardCompatible,
+            //Vsync = VSyncMode.Adaptive,
+            //WindowState = WindowState.Fullscreen
         };
 
         using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
