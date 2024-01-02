@@ -107,25 +107,26 @@ public class Window : GameWindow
         
         #region Cubes
         
+        // Create the first cube and then clone it with setting position to cube clones.
+        
+        var baseCube = _cubes[0];
+        
         var cubeMaterial = new Material(
             Texture.LoadFromFile("Resources/container2.png"),
             Texture.LoadFromFile("Resources/container2_specular.png"),
             new Shader("Shaders/shader.vert", "Shaders/lighting.frag"));
         
+        var cubeVbo = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, baseCube.Vertices.Length * sizeof(float), baseCube.Vertices, BufferUsageHint.StaticDraw);
+        
+        var cubeVao = GenerateVAOForPosNormTexVBOs(cubeMaterial.Shader);
+        
         // Generate cube VBOs.
         foreach (var cube in _cubes)
         {
             cube.Material = cubeMaterial;
-            
-            cube.VertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, cube.Vertices.Length * sizeof(float), cube.Vertices, BufferUsageHint.StaticDraw);    
-        }
-        
-        // Generate VAO for cubes.
-        var cubeVao = GenerateVAOForPosNormTexVBOs(cubeMaterial.Shader);
-        foreach (var cube in _cubes)
-        {
+            cube.VertexBufferObject = cubeVbo;
             cube.VertexArrayObject = cubeVao;
         }
         
