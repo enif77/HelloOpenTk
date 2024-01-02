@@ -180,11 +180,11 @@ public class Window : GameWindow
 
         // MacOS needs to update the viewport on each frame.
         // FramebufferSize returns correct values, only Cocoa visual render size is halved.
-        // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        // {
-        //     var cs = ClientSize;
-        //     GL.Viewport(0, 0, cs.X * 2, cs.Y * 2);
-        // }
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            var cs = ClientSize;
+            GL.Viewport(0, 0, cs.X * 2, cs.Y * 2);
+        }
         
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         
@@ -195,6 +195,7 @@ public class Window : GameWindow
 
         SwapBuffers();
     }
+    
 
     private void RenderCubes()
     {
