@@ -7,6 +7,7 @@ using OpenTK.Windowing.Desktop;
 
 using Common;
 using LightsTestTk.Models;
+using LightsTestTk.Models.Materials;
 
 
 namespace LightsTestTk;
@@ -68,9 +69,9 @@ public class Window : GameWindow
     private Shader _lampShader;
     
     // Skybox.
-    private Shader _skyboxShader;
-    private Texture _skyboxTexture;
-    private readonly Skybox _skybox = new Skybox(0);
+    //private Shader _skyboxShader;
+    //private Texture _skyboxTexture;
+    private Skybox _skybox;
     
     private Camera _camera;
     private bool _firstMove = true;
@@ -93,17 +94,27 @@ public class Window : GameWindow
         
         GL.Enable(EnableCap.DepthTest);
 
-        // Load shaders.
-        _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
-        _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-        _skyboxShader = new Shader("Shaders/skybox.vert", "Shaders/skybox.frag");
+        
+        #region Skybox
         
         // Generate skybox VBO and VAO.
+        _skybox = new Skybox(
+            0,
+            new SingleTextureMaterial(
+                Texture.LoadFromFile("Resources/SKYBOX.jpg"),
+                new Shader("Shaders/skybox.vert", "Shaders/skybox.frag")));
+        
         _skybox.VertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, _skybox.Vertices.Length * sizeof(float), _skybox.Vertices, BufferUsageHint.StaticDraw);
-        _skybox.VertexArrayObject = GenerateVAOForPosTexVBOs();
+        _skybox.VertexArrayObject = GenerateVAOForPosTexVBOs(_skybox.Material.Shader);
         
+        #endregion
+        
+        
+        // Load shaders.
+        _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
+        _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
         
         // Generate cube VBOs.
         foreach (var cube in _cubes)
@@ -132,24 +143,23 @@ public class Window : GameWindow
 
         _diffuseMap = Texture.LoadFromFile("Resources/container2.png");
         _specularMap = Texture.LoadFromFile("Resources/container2_specular.png");
-        _skyboxTexture = Texture.LoadFromFile("Resources/SKYBOX.jpg");
-
+        
         _camera = new Camera(Vector3.UnitZ * 3, Size.X / (float)Size.Y);
 
         CursorState = CursorState.Grabbed;
     }
 
-    private int GenerateVAOForPosTexVBOs()
+    private int GenerateVAOForPosTexVBOs(Shader shader)
     {
         var vao = GL.GenVertexArray();
         
         GL.BindVertexArray(vao);
 
-        var positionLocation = _skyboxShader.GetAttribLocation("aPos");
+        var positionLocation = shader.GetAttribLocation("aPos");
         GL.EnableVertexAttribArray(positionLocation);
         GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
             
-        var texCoordLocation = _skyboxShader.GetAttribLocation("aTexCoords");
+        var texCoordLocation = shader.GetAttribLocation("aTexCoords");
         GL.EnableVertexAttribArray(texCoordLocation);
         GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
 
@@ -288,20 +298,16 @@ public class Window : GameWindow
         GL.Disable(EnableCap.DepthTest);
         GL.Disable(EnableCap.CullFace);
         
+        _skybox.Material.Use();
+        
+        var shader = _skybox.Material.Shader;
+        
+        shader.SetMatrix4("view", _camera.GetViewMatrix());
+        shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+        shader.SetMatrix4("model", Matrix4.CreateTranslation(_camera.Position));
+        
         GL.BindVertexArray(_skybox.VertexArrayObject);
-        _skyboxTexture.Use(TextureUnit.Texture0);
-        _skyboxShader.Use();
-        
-        // Set the texture unit for the sampler in the fragment shader.
-        _skyboxShader.SetInt("material.diffuse", 0);
-        
-        _skyboxShader.SetMatrix4("view", _camera.GetViewMatrix());
-        _skyboxShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-        
         GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
-        
-        _skyboxShader.SetMatrix4("model", Matrix4.CreateTranslation(_camera.Position));
-
         GL.DrawArrays(PrimitiveType.Triangles, 0, _skybox.IndicesCount);
         
         //GL.Enable(EnableCap.CullFace);

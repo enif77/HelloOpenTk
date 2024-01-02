@@ -7,6 +7,11 @@ public class Skybox : IGameObject
     /// </summary>
     public int Id { get; }
 
+    /// <summary>
+    /// Material used to render the skybox.
+    /// </summary>
+    public IMaterial Material { get; }
+    
     private const float TexCoordsFix = 0.001f;
 
     public float[] Vertices { get; } =
@@ -66,9 +71,10 @@ public class Skybox : IGameObject
     public int VertexArrayObject { get; set; }
 
     
-    public Skybox(int id)
+    public Skybox(int id, IMaterial material)
     {
         Id = id;
+        Material = material ?? throw new ArgumentNullException(nameof(material));
         
         // 36 = 6 sides * 2 triangles per side * 3 vertices per triangle.
         IndicesCount = 36;
