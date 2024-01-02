@@ -1,3 +1,4 @@
+using LightsTestTk.Models.Materials;
 using OpenTK.Mathematics;
 
 namespace LightsTestTk.Models;
@@ -11,6 +12,10 @@ public class Cube : IGameObject
     
     public Vector3 Position { get; set; }
 
+    /// <summary>
+    /// Material used to render the cube.
+    /// </summary>
+    public IMaterial Material { get; set; }
 
     public float[] Vertices { get; } =
     {
@@ -72,6 +77,8 @@ public class Cube : IGameObject
     public Cube(int id)
     {
         Id = id;
+
+        Material = new NullMaterial();
         
         // 36 = 6 sides * 2 triangles per side * 3 vertices per triangle.
         IndicesCount = 36;

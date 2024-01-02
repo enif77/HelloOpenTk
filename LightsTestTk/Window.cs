@@ -59,18 +59,11 @@ public class Window : GameWindow
         }
     ];
 
-    // Cubes.
-    private Shader _lightingShader;
-    private Texture _diffuseMap;
-    private Texture _specularMap;
-    
     // Lamps.
     private int _vaoLamp;
     private Shader _lampShader;
     
     // Skybox.
-    //private Shader _skyboxShader;
-    //private Texture _skyboxTexture;
     private Skybox _skybox;
     
     private Camera _camera;
@@ -112,27 +105,35 @@ public class Window : GameWindow
         #endregion
         
         
-        // Load shaders.
-        _lightingShader = new Shader("Shaders/shader.vert", "Shaders/lighting.frag");
-        _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+        #region Cubes
+        
+        var cubeMaterial = new Material(
+            Texture.LoadFromFile("Resources/container2.png"),
+            Texture.LoadFromFile("Resources/container2_specular.png"),
+            new Shader("Shaders/shader.vert", "Shaders/lighting.frag"));
         
         // Generate cube VBOs.
         foreach (var cube in _cubes)
         {
+            cube.Material = cubeMaterial;
+            
             cube.VertexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, cube.Vertices.Length * sizeof(float), cube.Vertices, BufferUsageHint.StaticDraw);    
         }
         
         // Generate VAO for cubes.
-        var cubeVao = GenerateVAOForPosNormTexVBOs();
+        var cubeVao = GenerateVAOForPosNormTexVBOs(cubeMaterial.Shader);
         foreach (var cube in _cubes)
         {
             cube.VertexArrayObject = cubeVao;
         }
         
+        #endregion
+        
 
         {
+            _lampShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             _vaoLamp = GL.GenVertexArray();
             GL.BindVertexArray(_vaoLamp);
 
@@ -140,9 +141,6 @@ public class Window : GameWindow
             GL.EnableVertexAttribArray(positionLocation);
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
         }
-
-        _diffuseMap = Texture.LoadFromFile("Resources/container2.png");
-        _specularMap = Texture.LoadFromFile("Resources/container2_specular.png");
         
         _camera = new Camera(Vector3.UnitZ * 3, Size.X / (float)Size.Y);
 
@@ -167,21 +165,21 @@ public class Window : GameWindow
     }
 
     
-    private int GenerateVAOForPosNormTexVBOs()
+    private int GenerateVAOForPosNormTexVBOs(Shader shader)
     {
         var vao = GL.GenVertexArray();
         
         GL.BindVertexArray(vao);
 
-        var positionLocation = _lightingShader.GetAttribLocation("aPos");
+        var positionLocation = shader.GetAttribLocation("aPos");
         GL.EnableVertexAttribArray(positionLocation);
         GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
 
-        var normalLocation = _lightingShader.GetAttribLocation("aNormal");
+        var normalLocation = shader.GetAttribLocation("aNormal");
         GL.EnableVertexAttribArray(normalLocation);
         GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
 
-        var texCoordLocation = _lightingShader.GetAttribLocation("aTexCoords");
+        var texCoordLocation = shader.GetAttribLocation("aTexCoords");
         GL.EnableVertexAttribArray(texCoordLocation);
         GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
         
@@ -214,21 +212,14 @@ public class Window : GameWindow
 
     private void RenderCubes()
     {
-        _diffuseMap.Use(TextureUnit.Texture0);
-        _specularMap.Use(TextureUnit.Texture1);
+        var material = _cubes[0].Material;
         
-        _lightingShader.Use();
+        material.Use();
 
-        _lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
-        _lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-
-        _lightingShader.SetVector3("viewPos", _camera.Position);
-
-        _lightingShader.SetInt("material.diffuse", 0);
-        _lightingShader.SetInt("material.specular", 1);
-        _lightingShader.SetVector3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));
-        _lightingShader.SetFloat("material.shininess", 32.0f);
-
+        material.Shader.SetMatrix4("view", _camera.GetViewMatrix());
+        material.Shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+        material.Shader.SetVector3("viewPos", _camera.Position);
+        
         /*
            Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
            the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
@@ -237,18 +228,18 @@ public class Window : GameWindow
         */
         
         // Directional light
-        UpdateDirectionalLightUniforms(_lightingShader, _directionalLight);
+        UpdateDirectionalLightUniforms(material.Shader, _directionalLight);
 
         // Point lights
         foreach (var pointLight in _pointLights)
         {
-            UpdatePointLightUniforms(_lightingShader, pointLight);
+            UpdatePointLightUniforms(material.Shader, pointLight);
         }
 
         // Spot light
         _spotLight.Position = _camera.Position;
         _spotLight.Direction = _camera.Front;
-        UpdateSpotLightUniforms(_lightingShader, _spotLight);
+        UpdateSpotLightUniforms(material.Shader, _spotLight);
         
         // Draw the cubes
         var cubeIndex = 0;
@@ -260,7 +251,7 @@ public class Window : GameWindow
             Matrix4 model = Matrix4.CreateTranslation(cube.Position);
             float angle = 20.0f * cubeIndex;
             model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
-            _lightingShader.SetMatrix4("model", model);
+            material.Shader.SetMatrix4("model", model);
 
             // 36 = 6 sides * 2 triangles * 3 vertices.
             GL.DrawArrays(PrimitiveType.Triangles, 0, cube.IndicesCount);
