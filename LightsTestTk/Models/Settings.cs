@@ -20,6 +20,12 @@ public class Settings
     public int WindowHeight { get; init; } = Defaults.DefaultWindowHeight;
     
     /// <summary>
+    /// Viewport size scale factor.
+    /// Normally its 1, but on retina displays it's 2 or more.
+    /// </summary>
+    public int ViewportSizeScaleFactor { get; init; } = Defaults.DefaultViewportSizeScaleFactor;
+    
+    /// <summary>
     /// Enables or disables vertical synchronization.
     /// </summary>
     public bool EnableVSync { get; init; } = Defaults.DefaultEnableVSync;

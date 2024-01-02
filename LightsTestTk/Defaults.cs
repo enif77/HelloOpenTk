@@ -9,6 +9,7 @@ public class Defaults
     
     public const int DefaultWindowWidth = 800;
     public const int DefaultWindowHeight = 600;
+    public const int DefaultViewportSizeScaleFactor = 1;
     
     public const bool DefaultEnableVSync = true;
     public const bool DefaultEnableFullscreen = false;

@@ -15,6 +15,9 @@ namespace LightsTestTk;
 // with several point lights
 public class Window : GameWindow
 {
+    private int _viewportSizeScaleFactor = 1;
+    
+    
     private readonly Cube[] _cubes = new[]
     {
         new Cube(0) { Position = new Vector3(0.0f, 0.0f, 0.0f) },
@@ -84,6 +87,8 @@ public class Window : GameWindow
     {
         base.OnLoad();
 
+        _viewportSizeScaleFactor = Program.Settings.ViewportSizeScaleFactor;
+        
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         
         GL.Enable(EnableCap.DepthTest);
@@ -180,10 +185,10 @@ public class Window : GameWindow
 
         // MacOS needs to update the viewport on each frame.
         // FramebufferSize returns correct values, only Cocoa visual render size is halved.
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && _viewportSizeScaleFactor > 1)
         {
             var cs = ClientSize;
-            GL.Viewport(0, 0, cs.X * 2, cs.Y * 2);
+            GL.Viewport(0, 0, cs.X * _viewportSizeScaleFactor, cs.Y * _viewportSizeScaleFactor);
         }
         
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
