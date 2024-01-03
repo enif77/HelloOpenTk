@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 namespace Common;
 
 // A simple class meant to help create shaders.
-public sealed class Shader : IDisposable
+public sealed class Shader : IDisposable, IShader
 {
     public readonly int Handle;
 

@@ -10,7 +10,7 @@ namespace LightsTestTk.Models.Materials;
 public class SingleTextureMaterial : IMaterial
 {
     public Texture Texture { get; }
-    public Shader Shader { get; }
+    public IShader Shader { get; }
     
     
     public SingleTextureMaterial(Texture texture, Shader shader)

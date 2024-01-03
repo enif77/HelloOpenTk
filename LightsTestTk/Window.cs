@@ -148,7 +148,7 @@ public class Window : GameWindow
         CursorState = CursorState.Grabbed;
     }
 
-    private int GenerateVAOForPosTexVBOs(Shader shader)
+    private int GenerateVAOForPosTexVBOs(IShader shader)
     {
         var vao = GL.GenVertexArray();
         
@@ -166,7 +166,7 @@ public class Window : GameWindow
     }
 
     
-    private int GenerateVAOForPosNormTexVBOs(Shader shader)
+    private int GenerateVAOForPosNormTexVBOs(IShader shader)
     {
         var vao = GL.GenVertexArray();
         
@@ -307,7 +307,7 @@ public class Window : GameWindow
     }
 
 
-    private void UpdateSpotLightUniforms(Shader lightingShader, SpotLight spotLight)
+    private void UpdateSpotLightUniforms(IShader lightingShader, SpotLight spotLight)
     {
         lightingShader.SetVector3(spotLight.PositionUniformName, spotLight.Position);
         lightingShader.SetVector3(spotLight.DirectionUniformName, spotLight.Direction);
@@ -321,7 +321,7 @@ public class Window : GameWindow
         lightingShader.SetFloat(spotLight.OuterCutOffUniformName, spotLight.OuterCutOff);
     }
 
-    private void UpdateDirectionalLightUniforms(Shader lightingShader, DirectionalLight directionalLight)
+    private void UpdateDirectionalLightUniforms(IShader lightingShader, DirectionalLight directionalLight)
     {
         lightingShader.SetVector3(directionalLight.DirectionUniformName, _directionalLight.Direction);
         lightingShader.SetVector3(directionalLight.AmbientUniformName, _directionalLight.Ambient);
@@ -329,7 +329,7 @@ public class Window : GameWindow
         lightingShader.SetVector3(directionalLight.SpecularUniformName, _directionalLight.Specular);
     }
 
-    private void UpdatePointLightUniforms(Shader lightingShader, PointLight pointLight)
+    private void UpdatePointLightUniforms(IShader lightingShader, PointLight pointLight)
     {
         lightingShader.SetVector3(pointLight.PositionUniformName, pointLight.Position);
         lightingShader.SetVector3(pointLight.AmbientUniformName, pointLight.Ambient);

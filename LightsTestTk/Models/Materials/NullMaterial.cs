@@ -10,12 +10,12 @@ namespace LightsTestTk.Models.Materials;
 /// </summary>
 public class NullMaterial : IMaterial
 {
-    public Shader Shader { get; }
+    public IShader Shader { get; }
     
     
     public NullMaterial()
     {
-        Shader = null;  // TODO: Create a shader for this.
+        Shader = new NullShader();
     }
     
     

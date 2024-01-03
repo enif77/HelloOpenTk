@@ -12,7 +12,7 @@ public class Material : IMaterial
 {
     public Texture DiffuseMap { get; }
     public Texture SpecularMap { get; }
-    public Shader Shader { get; }
+    public IShader Shader { get; }
     
     
     public Material(Texture diffuseMap, Texture specularMap, Shader shader)

@@ -5,7 +5,7 @@ namespace LightsTestTk.Models;
 
 public interface IMaterial
 {
-    Shader Shader { get; }
+    IShader Shader { get; }
     
     void Use();
 }
