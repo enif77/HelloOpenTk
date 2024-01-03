@@ -7,6 +7,7 @@ using OpenTK.Windowing.Desktop;
 
 using Common;
 using LightsTestTk.Models;
+using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
 
 

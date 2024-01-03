@@ -1,6 +1,6 @@
 using OpenTK.Mathematics;
 
-namespace LightsTestTk.Models;
+namespace LightsTestTk.Models.Lights;
 
 public class SpotLight : ILight
 {
