@@ -1,6 +1,7 @@
 #version 330 core
 
-struct Material {
+struct Material
+{
     sampler2D diffuse;
 };
 
