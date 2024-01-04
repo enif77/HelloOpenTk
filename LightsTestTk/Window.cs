@@ -37,11 +37,6 @@ public class Window : GameWindow
         new Cube(9) { Position = new Vector3(-1.3f, 1.0f, -1.5f) }
     };
     
-
-    // Lamps.
-    private int _vaoLamp;
-    private Shader _lampShader;
-    
     private bool _firstMove = true;
     private Vector2 _lastPos;
 
@@ -119,14 +114,16 @@ public class Window : GameWindow
         
 
         {
-            _lampShader = new Shader(
-                File.ReadAllText("Resources/Shaders/shader.vert"), 
-                File.ReadAllText("Resources/Shaders/shader.frag"));
+            _scene.LampCube.Material = new SingleColorMaterial(
+                new Vector3(1.0f, 1.0f, 1.0f),
+                new Shader(
+                    File.ReadAllText("Resources/Shaders/shader.vert"), 
+                    File.ReadAllText("Resources/Shaders/shader.frag")));
             
-            _vaoLamp = GL.GenVertexArray();
-            GL.BindVertexArray(_vaoLamp);
+            _scene.LampCube.VertexArrayObject = GL.GenVertexArray();
+            GL.BindVertexArray(_scene.LampCube.VertexArrayObject);
 
-            var positionLocation = _lampShader.GetAttribLocation("aPos");
+            var positionLocation = _scene.LampCube.Material.Shader.GetAttribLocation("aPos");
             GL.EnableVertexAttribArray(positionLocation);
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
         }
@@ -257,21 +254,22 @@ public class Window : GameWindow
     
     private void RenderLamps()
     {
-        GL.BindVertexArray(_vaoLamp);
+        GL.BindVertexArray(_scene.LampCube.VertexArrayObject);
 
-        _lampShader.Use();
+        _scene.LampCube.Material.Use();
 
-        _lampShader.SetMatrix4("view", _camera.GetViewMatrix());
-        _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+        var shader = _scene.LampCube.Material.Shader;
+        
+        shader.SetMatrix4("view", _camera.GetViewMatrix());
+        shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
         
         // We use a loop to draw all the lights at the proper position
         GL.BindBuffer(BufferTarget.ArrayBuffer, _scene.LampCube.VertexBufferObject); // All lamps use the same VBO.
         foreach (var pointLight in _scene.PointLights)
         {
-            var lampMatrix = Matrix4.CreateScale(0.2f);
-            lampMatrix = lampMatrix * Matrix4.CreateTranslation(pointLight.Position);
-
-            _lampShader.SetMatrix4("model", lampMatrix);
+            shader.SetMatrix4(
+                "model",
+                Matrix4.CreateScale(0.2f) * Matrix4.CreateTranslation(pointLight.Position));
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, _scene.LampCube.IndicesCount);
         }
