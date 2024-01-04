@@ -94,10 +94,10 @@ public class Window : GameWindow
         _skybox = new Skybox(
             0,
             new SingleTextureMaterial(
-                Texture.LoadFromFile("Resources/SKYBOX.jpg"),
+                Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
                 new Shader(
-                    File.ReadAllText("Shaders/skybox.vert"), 
-                    File.ReadAllText("Shaders/skybox.frag"))));
+                    File.ReadAllText("Resources/Shaders/skybox.vert"), 
+                    File.ReadAllText("Resources/Shaders/skybox.frag"))));
         
         _skybox.VertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
@@ -114,11 +114,11 @@ public class Window : GameWindow
         var baseCube = _cubes[0];
         
         var cubeMaterial = new Material(
-            Texture.LoadFromFile("Resources/container2.png"),
-            Texture.LoadFromFile("Resources/container2_specular.png"),
+            Texture.LoadFromFile("Resources/Textures/container2.png"),
+            Texture.LoadFromFile("Resources/Textures/container2_specular.png"),
             new Shader(
-                File.ReadAllText("Shaders/shader.vert"), 
-                File.ReadAllText("Shaders/lighting.frag")));
+                File.ReadAllText("Resources/Shaders/shader.vert"), 
+                File.ReadAllText("Resources/Shaders/lighting.frag")));
         
         var cubeVbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVbo);
@@ -139,8 +139,8 @@ public class Window : GameWindow
 
         {
             _lampShader = new Shader(
-                File.ReadAllText("Shaders/shader.vert"), 
-                File.ReadAllText("Shaders/shader.frag"));
+                File.ReadAllText("Resources/Shaders/shader.vert"), 
+                File.ReadAllText("Resources/Shaders/shader.frag"));
             _vaoLamp = GL.GenVertexArray();
             GL.BindVertexArray(_vaoLamp);
 

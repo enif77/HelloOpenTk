@@ -16,10 +16,13 @@
     <ItemGroup>
         <None Include="Resources/**" CopyToOutputDirectory="PreserveNewest" />
         <None Include="Shaders/**" CopyToOutputDirectory="PreserveNewest" />
-        <None Update="Shaders\skybox.vert">
+        <None Update="Resources\Textures\container2.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Shaders\skybox.frag">
+        <None Update="Resources\Textures\container2_specular.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Resources\Textures\SKYBOX.jpg">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
