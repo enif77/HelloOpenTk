@@ -1,6 +1,6 @@
-using OpenTK.Mathematics;
-
 namespace Common;
+
+using OpenTK.Mathematics;
 
 /// <summary>
 /// A shader, that does nothing.

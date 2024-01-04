@@ -1,12 +1,22 @@
 namespace LightsTestTk.Models;
 
-public class Skybox : IGameObject
+using OpenTK.Mathematics;
+
+/// <summary>
+/// Skybox.
+/// </summary>
+public class Skybox : IGameObject, IRenderable
 {
     /// <summary>
     /// The index of the light in the shader.
     /// </summary>
     public int Id { get; }
-
+    
+    public IGameObject? Parent { get; set; }
+    public IList<IGameObject> Children { get; }
+    
+    public Vector3 Position { get; set; }
+    
     /// <summary>
     /// Material used to render the skybox.
     /// </summary>
@@ -76,10 +86,20 @@ public class Skybox : IGameObject
         Id = id;
         Material = material ?? throw new ArgumentNullException(nameof(material));
         
+        Position = new Vector3();
+        
         // 36 = 6 sides * 2 triangles per side * 3 vertices per triangle.
         IndicesCount = 36;
         
         VertexBufferObject = -1;
         VertexArrayObject = -1;
+        
+        Children = new List<IGameObject>();
+    }
+
+
+    public void Render()
+    {
+        throw new NotImplementedException();
     }
 }

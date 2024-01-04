@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿namespace LightsTestTk;
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 
@@ -7,9 +9,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
 using LightsTestTk.Models;
-
-
-namespace LightsTestTk;
 
 public static class Program
 {

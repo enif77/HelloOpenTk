@@ -1,3 +1,5 @@
+namespace LightsTestTk;
+
 using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -9,9 +11,6 @@ using Common;
 using LightsTestTk.Models;
 using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
-
-
-namespace LightsTestTk;
 
 // In this tutorial we focus on how to set up a scene with multiple lights, both of different types but also
 // with several point lights
@@ -305,8 +304,8 @@ public class Window : GameWindow
         shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
         shader.SetMatrix4("model", Matrix4.CreateTranslation(_camera.Position));
         
-        GL.BindVertexArray(_skybox.VertexArrayObject);
         GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
+        GL.BindVertexArray(_skybox.VertexArrayObject);
         GL.DrawArrays(PrimitiveType.Triangles, 0, _skybox.IndicesCount);
         
         //GL.Enable(EnableCap.CullFace);

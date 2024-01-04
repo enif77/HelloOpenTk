@@ -1,6 +1,6 @@
-using OpenTK.Mathematics;
-
 namespace LightsTestTk.Models.Lights;
+
+using OpenTK.Mathematics;
 
 public class DirectionalLight : ILight
 {
@@ -8,6 +8,15 @@ public class DirectionalLight : ILight
     /// The index of the light in the shader.
     /// </summary>
     public int Id { get; }
+    
+    public IGameObject? Parent { get; set; }
+    public IList<IGameObject> Children { get; }
+    
+    /// <summary>
+    /// Position relative to the parent.
+    /// NOTE: This is not used for directional lights.
+    /// </summary>
+    public Vector3 Position { get; set; }
     
     public Vector3 Direction { get; set; }
     public string DirectionUniformName { get; }
@@ -26,6 +35,8 @@ public class DirectionalLight : ILight
     {
         Id = 0;
         
+        Position = new Vector3();
+        
         Direction = new Vector3(0.2f, -1.0f, -0.3f);
         DirectionUniformName = $"directionalLight.direction";
         
@@ -37,5 +48,7 @@ public class DirectionalLight : ILight
         
         Specular = new Vector3(0.5f, 0.5f, 0.5f);
         SpecularUniformName = $"directionalLight.specular";
+        
+        Children = new List<IGameObject>();
     }
 }

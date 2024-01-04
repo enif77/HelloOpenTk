@@ -1,6 +1,6 @@
-using System.Text.Json;
-
 namespace LightsTestTk.Models;
+
+using System.Text.Json;
 
 /// <summary>
 /// Represents application settings.

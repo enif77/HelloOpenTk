@@ -1,8 +1,7 @@
-using Common;
-using OpenTK.Graphics.OpenGL4;
-
 namespace LightsTestTk.Models.Materials;
 
+using Common;
+using OpenTK.Graphics.OpenGL4;
 
 /// <summary>
 /// A material that uses a single texture with no lighting. 

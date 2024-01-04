@@ -1,6 +1,6 @@
-using OpenTK.Mathematics;
-
 namespace LightsTestTk.Models.Lights;
+
+using OpenTK.Mathematics;
 
 public class PointLight : ILight
 {
@@ -8,6 +8,9 @@ public class PointLight : ILight
     /// The index of the light in the shader.
     /// </summary>
     public int Id { get; }
+    
+    public IGameObject? Parent { get; set; }
+    public IList<IGameObject> Children { get; }
     
     public Vector3 Position { get; set; }
     public string PositionUniformName { get; }
@@ -55,5 +58,7 @@ public class PointLight : ILight
         
         Quadratic = 0.032f;
         QuadraticUniformName = $"pointLights[{Id}].quadratic";
+        
+        Children = new List<IGameObject>();
     }
 }

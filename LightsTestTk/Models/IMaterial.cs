@@ -1,7 +1,6 @@
-using Common;
-
 namespace LightsTestTk.Models;
 
+using Common;
 
 public interface IMaterial
 {

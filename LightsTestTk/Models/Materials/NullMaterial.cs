@@ -1,9 +1,6 @@
-using Common;
-using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-
 namespace LightsTestTk.Models.Materials;
 
+using Common;
 
 /// <summary>
 /// A material that does nothing. 

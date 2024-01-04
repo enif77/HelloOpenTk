@@ -1,14 +1,21 @@
-using LightsTestTk.Models.Materials;
-using OpenTK.Mathematics;
-
 namespace LightsTestTk.Models;
 
-public class Cube : IGameObject
+using OpenTK.Mathematics;
+
+using LightsTestTk.Models.Materials;
+
+/// <summary>
+/// Cube.
+/// </summary>
+public class Cube : IGameObject, IRenderable
 {
     /// <summary>
     /// The index of the light in the shader.
     /// </summary>
     public int Id { get; }
+    
+    public IGameObject? Parent { get; set; }
+    public IList<IGameObject> Children { get; }
     
     public Vector3 Position { get; set; }
 
@@ -87,5 +94,13 @@ public class Cube : IGameObject
         VertexArrayObject = -1;
         
         Position = new Vector3();
+        
+        Children = new List<IGameObject>();
+    }
+    
+    
+    public void Render()
+    {
+        throw new NotImplementedException();
     }
 }
