@@ -1,3 +1,6 @@
+using LightsTestTk.Extensions;
+using OpenTK.Graphics.OpenGL4;
+
 namespace LightsTestTk.Models;
 
 using OpenTK.Mathematics;
@@ -99,8 +102,23 @@ public class Cube : IGameObject, IRenderable
     }
     
     
+    private Scene? _scene;
+
     public void Render()
     {
-        throw new NotImplementedException();
+        _scene ??= this.GetScene();
+        
+        Material.Use();
+        
+        var shader = Material.Shader;
+        var camera =_scene.Camera;
+        
+        shader.SetMatrix4("view", camera.GetViewMatrix());
+        shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+        shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
+        
+        GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+        GL.BindVertexArray(VertexArrayObject);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, IndicesCount);
     }
 }

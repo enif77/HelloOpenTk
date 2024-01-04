@@ -1,3 +1,6 @@
+using LightsTestTk.Extensions;
+using OpenTK.Graphics.OpenGL4;
+
 namespace LightsTestTk.Models;
 
 using OpenTK.Mathematics;
@@ -7,11 +10,6 @@ using OpenTK.Mathematics;
 /// </summary>
 public class Skybox : IGameObject, IRenderable
 {
-    /// <summary>
-    /// The index of the light in the shader.
-    /// </summary>
-    public int Id { get; }
-    
     public IGameObject? Parent { get; set; }
     public IList<IGameObject> Children { get; }
     
@@ -81,9 +79,8 @@ public class Skybox : IGameObject, IRenderable
     public int VertexArrayObject { get; set; }
 
     
-    public Skybox(int id, IMaterial material)
+    public Skybox(IMaterial material)
     {
-        Id = id;
         Material = material ?? throw new ArgumentNullException(nameof(material));
         
         Position = new Vector3();
@@ -97,9 +94,28 @@ public class Skybox : IGameObject, IRenderable
         Children = new List<IGameObject>();
     }
 
+    
+    private Scene? _scene;
 
     public void Render()
     {
-        throw new NotImplementedException();
+        _scene ??= this.GetScene();
+        
+        GL.Disable(EnableCap.DepthTest);
+        
+        Material.Use();
+        
+        var shader = Material.Shader;
+        var camera =_scene.Camera;
+        
+        shader.SetMatrix4("view", camera.GetViewMatrix());
+        shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+        shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
+        
+        GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+        GL.BindVertexArray(VertexArrayObject);
+        GL.DrawArrays(PrimitiveType.Triangles, 0, IndicesCount);
+        
+        GL.Enable(EnableCap.DepthTest);
     }
 }

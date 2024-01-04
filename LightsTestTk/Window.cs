@@ -1,3 +1,5 @@
+using LightsTestTk.Extensions;
+
 namespace LightsTestTk;
 
 using System.Runtime.InteropServices;
@@ -18,8 +20,10 @@ public class Window : GameWindow
 {
     private int _viewportSizeScaleFactor = 1;
     
+    private Camera _camera;
+    private Scene _scene;
     
-    private readonly Cube[] _cubes = new[]
+    private Cube[] _cubes = new[]
     {
         new Cube(0) { Position = new Vector3(0.0f, 0.0f, 0.0f) },
         new Cube(1) { Position = new Vector3(2.0f, 5.0f, -15.0f) },
@@ -33,40 +37,11 @@ public class Window : GameWindow
         new Cube(9) { Position = new Vector3(-1.3f, 1.0f, -1.5f) }
     };
     
-    private readonly Cube _lampCube = new Cube(-1);  // Cube.Id = -1 means it's a lamp.
-    
-    private readonly DirectionalLight _directionalLight = new DirectionalLight();
-    private readonly SpotLight _spotLight = new SpotLight();
-    
-    // We need the point lights' positions to draw the lamps and to get light the materials properly
-    private readonly PointLight[] _pointLights =
-    [
-        new PointLight(0)
-        {
-            Position = new Vector3(0.7f, 0.2f, 2.0f),
-        },
-        new PointLight(1)
-        {
-            Position = new Vector3(2.3f, -3.3f, -4.0f),
-        },
-        new PointLight(2)
-        {
-            Position = new Vector3(-4.0f, 2.0f, -12.0f),
-        },
-        new PointLight(3)
-        {
-            Position = new Vector3(0.0f, 0.0f, -3.0f),
-        }
-    ];
 
     // Lamps.
     private int _vaoLamp;
     private Shader _lampShader;
     
-    // Skybox.
-    private Skybox _skybox;
-    
-    private Camera _camera;
     private bool _firstMove = true;
     private Vector2 _lastPos;
 
@@ -80,38 +55,40 @@ public class Window : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
-
+        
         _viewportSizeScaleFactor = Program.Settings.ViewportSizeScaleFactor;
         
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        
         GL.Enable(EnableCap.DepthTest);
-
+        
+        #region Scene
+        
+        _camera = new Camera(Vector3.UnitZ * 3, Size.X / (float)Size.Y);
+        _scene = new Scene(_camera);
         
         #region Skybox
         
         // Generate skybox VBO and VAO.
-        _skybox = new Skybox(
-            0,
+        var skybox = new Skybox(
             new SingleTextureMaterial(
                 Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
                 new Shader(
                     File.ReadAllText("Resources/Shaders/skybox.vert"), 
                     File.ReadAllText("Resources/Shaders/skybox.frag"))));
         
-        _skybox.VertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, _skybox.Vertices.Length * sizeof(float), _skybox.Vertices, BufferUsageHint.StaticDraw);
-        _skybox.VertexArrayObject = GenerateVAOForPosTexVBOs(_skybox.Material.Shader);
+        skybox.VertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.VertexBufferObject);
+        GL.BufferData(BufferTarget.ArrayBuffer, skybox.Vertices.Length * sizeof(float), skybox.Vertices, BufferUsageHint.StaticDraw);
+        skybox.VertexArrayObject = GenerateVAOForPosTexVBOs(skybox.Material.Shader);
+        
+        _scene.AddSkybox(skybox);
         
         #endregion
         
         
         #region Cubes
         
-        // Create the first cube and then clone it with setting position to cube clones.
-        
-        var baseCube = _cubes[0];
+        // TODO: Create the first cube and then clone it with setting position to cube clones.
         
         var cubeMaterial = new Material(
             Texture.LoadFromFile("Resources/Textures/container2.png"),
@@ -119,6 +96,8 @@ public class Window : GameWindow
             new Shader(
                 File.ReadAllText("Resources/Shaders/shader.vert"), 
                 File.ReadAllText("Resources/Shaders/lighting.frag")));
+
+        var baseCube = _cubes[0];
         
         var cubeVbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVbo);
@@ -132,6 +111,8 @@ public class Window : GameWindow
             cube.Material = cubeMaterial;
             cube.VertexBufferObject = cubeVbo;
             cube.VertexArrayObject = cubeVao;
+            
+            _scene.AddChild(cube);
         }
         
         #endregion
@@ -141,6 +122,7 @@ public class Window : GameWindow
             _lampShader = new Shader(
                 File.ReadAllText("Resources/Shaders/shader.vert"), 
                 File.ReadAllText("Resources/Shaders/shader.frag"));
+            
             _vaoLamp = GL.GenVertexArray();
             GL.BindVertexArray(_vaoLamp);
 
@@ -148,9 +130,9 @@ public class Window : GameWindow
             GL.EnableVertexAttribArray(positionLocation);
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
         }
-        
-        _camera = new Camera(Vector3.UnitZ * 3, Size.X / (float)Size.Y);
 
+        #endregion
+        
         CursorState = CursorState.Grabbed;
     }
 
@@ -207,25 +189,30 @@ public class Window : GameWindow
         }
         
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        
-        RenderSkybox();
-        
-        RenderCubes();
+
+        _scene.Skybox?.Render();
+        RenderScene();
         RenderLamps();
 
         SwapBuffers();
     }
     
 
-    private void RenderCubes()
+    private void RenderScene()
     {
+        var viewMatrix = _camera.GetViewMatrix();
+        var projectionMatrix = _camera.GetProjectionMatrix();
+        var cameraPosition = _camera.Position;
+        
+        // ---
+        
         var material = _cubes[0].Material;
         
         material.Use();
 
-        material.Shader.SetMatrix4("view", _camera.GetViewMatrix());
-        material.Shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-        material.Shader.SetVector3("viewPos", _camera.Position);
+        material.Shader.SetMatrix4("view", viewMatrix);
+        material.Shader.SetMatrix4("projection", projectionMatrix);
+        material.Shader.SetVector3("viewPos", cameraPosition);
         
         /*
            Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
@@ -235,18 +222,18 @@ public class Window : GameWindow
         */
         
         // Directional light
-        UpdateDirectionalLightUniforms(material.Shader, _directionalLight);
+        UpdateDirectionalLightUniforms(material.Shader, _scene.DirectionalLight);
 
         // Point lights
-        foreach (var pointLight in _pointLights)
+        foreach (var pointLight in _scene.PointLights)
         {
             UpdatePointLightUniforms(material.Shader, pointLight);
         }
 
         // Spot light
-        _spotLight.Position = _camera.Position;
-        _spotLight.Direction = _camera.Front;
-        UpdateSpotLightUniforms(material.Shader, _spotLight);
+        _scene.SpotLight.Position = _camera.Position;
+        _scene.SpotLight.Direction = _camera.Front;
+        UpdateSpotLightUniforms(material.Shader, _scene.SpotLight);
         
         // Draw the cubes
         var cubeIndex = 0;
@@ -278,38 +265,16 @@ public class Window : GameWindow
         _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
         
         // We use a loop to draw all the lights at the proper position
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _lampCube.VertexBufferObject); // All lamps use the same VBO.
-        foreach (var pointLight in _pointLights)
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _scene.LampCube.VertexBufferObject); // All lamps use the same VBO.
+        foreach (var pointLight in _scene.PointLights)
         {
             var lampMatrix = Matrix4.CreateScale(0.2f);
             lampMatrix = lampMatrix * Matrix4.CreateTranslation(pointLight.Position);
 
             _lampShader.SetMatrix4("model", lampMatrix);
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, _lampCube.IndicesCount);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _scene.LampCube.IndicesCount);
         }
-    }
-
-
-    private void RenderSkybox()
-    {
-        GL.Disable(EnableCap.DepthTest);
-        GL.Disable(EnableCap.CullFace);
-        
-        _skybox.Material.Use();
-        
-        var shader = _skybox.Material.Shader;
-        
-        shader.SetMatrix4("view", _camera.GetViewMatrix());
-        shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-        shader.SetMatrix4("model", Matrix4.CreateTranslation(_camera.Position));
-        
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _skybox.VertexBufferObject);
-        GL.BindVertexArray(_skybox.VertexArrayObject);
-        GL.DrawArrays(PrimitiveType.Triangles, 0, _skybox.IndicesCount);
-        
-        //GL.Enable(EnableCap.CullFace);
-        GL.Enable(EnableCap.DepthTest);
     }
 
 
@@ -329,10 +294,10 @@ public class Window : GameWindow
 
     private void UpdateDirectionalLightUniforms(IShader lightingShader, DirectionalLight directionalLight)
     {
-        lightingShader.SetVector3(directionalLight.DirectionUniformName, _directionalLight.Direction);
-        lightingShader.SetVector3(directionalLight.AmbientUniformName, _directionalLight.Ambient);
-        lightingShader.SetVector3(directionalLight.DiffuseUniformName, _directionalLight.Diffuse);
-        lightingShader.SetVector3(directionalLight.SpecularUniformName, _directionalLight.Specular);
+        lightingShader.SetVector3(directionalLight.DirectionUniformName, directionalLight.Direction);
+        lightingShader.SetVector3(directionalLight.AmbientUniformName, directionalLight.Ambient);
+        lightingShader.SetVector3(directionalLight.DiffuseUniformName, directionalLight.Diffuse);
+        lightingShader.SetVector3(directionalLight.SpecularUniformName, directionalLight.Specular);
     }
 
     private void UpdatePointLightUniforms(IShader lightingShader, PointLight pointLight)
