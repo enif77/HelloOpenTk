@@ -45,6 +45,11 @@ public class Scene : IGameObject
     }
 
 
+    /// <summary>
+    /// All known shaders used in the scene.
+    /// </summary>
+    public readonly Dictionary<string, Shader> Shaders = new Dictionary<string, Shader>();
+    
     public Skybox? Skybox { get; set; }
 
     public Cube LampCube = new Cube(-1);
