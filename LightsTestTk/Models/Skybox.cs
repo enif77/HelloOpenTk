@@ -1,4 +1,6 @@
+using Common;
 using LightsTestTk.Extensions;
+using LightsTestTk.Models.Materials;
 using OpenTK.Graphics.OpenGL4;
 
 namespace LightsTestTk.Models;
@@ -96,21 +98,25 @@ public class Skybox : IGameObject, IRenderable
 
     
     private Scene? _scene;
+    private Shader? _shader;
 
     public void Render()
     {
         _scene ??= this.GetScene();
+        _shader ??= _scene.Shaders["skybox"];
+        
+        var camera =_scene.Camera;
         
         GL.Disable(EnableCap.DepthTest);
         
-        Material.Use();
+        ((SimpleTextureMaterial)Material).DiffuseMap.Use(TextureUnit.Texture0);
         
-        var shader = Material.Shader;
-        var camera =_scene.Camera;
+        _shader.Use();
         
-        shader.SetMatrix4("view", camera.GetViewMatrix());
-        shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-        shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
+        _shader.SetInt("texture0", 0);
+        _shader.SetMatrix4("view", camera.GetViewMatrix());
+        _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+        _shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
         
         GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
         GL.BindVertexArray(VertexArrayObject);

@@ -10,6 +10,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 
 using Common;
+
 using LightsTestTk.Models;
 using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
@@ -63,13 +64,15 @@ public class Window : GameWindow
         
         #region Skybox
         
+        _scene.AddShader("skybox", new Shader(
+            File.ReadAllText("Resources/Shaders/skybox.vert"), 
+            File.ReadAllText("Resources/Shaders/skybox.frag")));
+        
         // Generate skybox VBO and VAO.
         var skybox = new Skybox(
             new SimpleTextureMaterial(
                 Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
-                new Shader(
-                    File.ReadAllText("Resources/Shaders/skybox.vert"), 
-                    File.ReadAllText("Resources/Shaders/skybox.frag"))));
+                _scene.Shaders["skybox"]));
         
         skybox.VertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.VertexBufferObject);
