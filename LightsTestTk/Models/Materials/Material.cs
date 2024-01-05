@@ -11,6 +11,9 @@ public class Material : IMaterial
 {
     public Texture DiffuseMap { get; }
     public Texture SpecularMap { get; }
+    public Vector3 Specular { get; set; }
+    public float Shininess { get; set; }
+    
     public IShader Shader { get; }
     
     
@@ -18,6 +21,8 @@ public class Material : IMaterial
     {
         DiffuseMap = diffuseMap ?? throw new ArgumentNullException(nameof(diffuseMap));
         SpecularMap = specularMap ?? throw new ArgumentNullException(nameof(specularMap));
+        Specular = new Vector3(0.5f, 0.5f, 0.5f);
+        Shininess = 32.0f;
         Shader = shader ?? throw new ArgumentNullException(nameof(shader));
     }
     
@@ -31,7 +36,7 @@ public class Material : IMaterial
         
         Shader.SetInt("material.diffuse", 0);
         Shader.SetInt("material.specular", 1);
-        Shader.SetVector3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));
-        Shader.SetFloat("material.shininess", 32.0f);
+        Shader.SetVector3("material.specular", Specular);
+        Shader.SetFloat("material.shininess", Shininess);
     }
 }
