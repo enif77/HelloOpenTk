@@ -1,3 +1,5 @@
+using Common;
+
 namespace LightsTestTk.Extensions;
 
 using LightsTestTk.Models;
@@ -53,5 +55,24 @@ public static class GameObjectExtensions
         if (skybox == null) throw new ArgumentNullException(nameof(skybox));
         skybox.Parent = scene ?? throw new ArgumentNullException(nameof(scene));
         scene.Skybox = skybox;
+    }
+
+
+    /// <summary>
+    /// Adds a shader to the scene.
+    /// </summary>
+    /// <param name="scene">A scene.</param>
+    /// <param name="shaderName">A shader name.</param>
+    /// <param name="shader">A shader.</param>
+    /// <exception cref="InvalidOperationException">If a shader with the shaderName exists in the shaders collection.</exception>
+    /// <exception cref="ArgumentException">If the shaderName parameter is null, empty or whitespace.</exception>
+    /// <exception cref="ArgumentNullException">If the shader is null.</exception>
+    public static void AddShader(this Scene scene, string shaderName, Shader shader)
+    {
+        if (string.IsNullOrWhiteSpace(shaderName)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(shaderName));
+        if (scene.Shaders.ContainsKey(shaderName)) throw new InvalidOperationException($"Shader with the '{shaderName}' name already exists.");
+        if (shader == null) throw new ArgumentNullException(nameof(shader));
+        
+        scene.Shaders.Add(shaderName, shader);
     }
 }
