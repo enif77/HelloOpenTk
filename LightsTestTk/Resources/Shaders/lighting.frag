@@ -59,11 +59,11 @@ uniform SpotLight spotLight;
 uniform Material material;
 uniform vec3 viewPos;
 
-out vec4 FragColor;
-
 in vec3 Normal;
 in vec3 FragPos;
 in vec2 TexCoords;
+
+out vec4 FragColor;
 
 // Here we have some function prototypes, these are the signatures the gpu will use to know how the
 // parameters of each light calculation is layed out.

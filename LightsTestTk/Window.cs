@@ -65,7 +65,7 @@ public class Window : GameWindow
         
         // Generate skybox VBO and VAO.
         var skybox = new Skybox(
-            new SingleTextureMaterial(
+            new SimpleTextureMaterial(
                 Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
                 new Shader(
                     File.ReadAllText("Resources/Shaders/skybox.vert"), 
@@ -114,11 +114,11 @@ public class Window : GameWindow
         
 
         {
-            _scene.LampCube.Material = new SingleColorMaterial(
+            _scene.LampCube.Material = new SimpleColorMaterial(
                 new Vector3(1.0f, 1.0f, 1.0f),
                 new Shader(
                     File.ReadAllText("Resources/Shaders/shader.vert"), 
-                    File.ReadAllText("Resources/Shaders/shader.frag")));
+                    File.ReadAllText("Resources/Shaders/simple-color.frag")));
             
             _scene.LampCube.VertexArrayObject = GL.GenVertexArray();
             GL.BindVertexArray(_scene.LampCube.VertexArrayObject);
