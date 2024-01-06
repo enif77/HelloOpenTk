@@ -1,5 +1,3 @@
-using LightsTestTk.Extensions;
-
 namespace LightsTestTk;
 
 using System.Runtime.InteropServices;
@@ -11,9 +9,12 @@ using OpenTK.Windowing.Desktop;
 
 using Common;
 
+using LightsTestTk.Extensions;
 using LightsTestTk.Models;
 using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
+using LightsTestTk.Models.Shaders;
+
 
 // In this tutorial we focus on how to set up a scene with multiple lights, both of different types but also
 // with several point lights
@@ -62,22 +63,22 @@ public class Window : GameWindow
         _camera = new Camera(Vector3.UnitZ * 3, Size.X / (float)Size.Y);
         _scene = new Scene(_camera);
         
+        #region Shaders
+        
+        _scene.AddShader(new NullShader());
+        _scene.AddShader(new SkyboxShader());
+        _scene.AddShader(new LampShader());
+        _scene.AddShader(new CubeShader());
+        
+        #endregion
+        
         #region Skybox
         
-        _scene.AddShader("skybox", new Shader(
-            File.ReadAllText("Resources/Shaders/skybox.vert"), 
-            File.ReadAllText("Resources/Shaders/skybox.frag")));
-        
-        // Generate skybox VBO and VAO.
         var skybox = new Skybox(
-            new SimpleTextureMaterial(
-                Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
-                _scene.Shaders["skybox"]));
+            new SimpleTextureMaterial(Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg")));
         
-        skybox.VertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, skybox.VertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, skybox.Vertices.Length * sizeof(float), skybox.Vertices, BufferUsageHint.StaticDraw);
-        skybox.VertexArrayObject = GenerateVAOForPosTexVBOs(skybox.Material.Shader);
+        skybox.GenerateVertexObjectBuffer();
+        skybox.GenerateVertexArrayObjectForPosTexVbo(_scene.Shaders["skybox"]);
         
         _scene.AddSkybox(skybox);
         
@@ -90,25 +91,16 @@ public class Window : GameWindow
         
         var cubeMaterial = new Material(
             Texture.LoadFromFile("Resources/Textures/container2.png"),
-            Texture.LoadFromFile("Resources/Textures/container2_specular.png"),
-            new Shader(
-                File.ReadAllText("Resources/Shaders/shader.vert"), 
-                File.ReadAllText("Resources/Shaders/lighting.frag")));
+            Texture.LoadFromFile("Resources/Textures/container2_specular.png"));
 
-        var baseCube = _cubes[0];
+        var cubeShader = _scene.Shaders["cube"];
         
-        var cubeVbo = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, baseCube.Vertices.Length * sizeof(float), baseCube.Vertices, BufferUsageHint.StaticDraw);
-        
-        var cubeVao = GenerateVAOForPosNormTexVBOs(cubeMaterial.Shader);
-        
-        // Generate cube VBOs.
         foreach (var cube in _cubes)
         {
             cube.Material = cubeMaterial;
-            cube.VertexBufferObject = cubeVbo;
-            cube.VertexArrayObject = cubeVao;
+
+            cube.GenerateVertexObjectBuffer();
+            cube.GenerateVertexArrayObjectForPosNormTexVbo(cubeShader);
             
             _scene.AddChild(cube);
         }
@@ -117,62 +109,14 @@ public class Window : GameWindow
         
 
         {
-            _scene.LampCube.Material = new SimpleColorMaterial(
-                new Vector3(1.0f, 1.0f, 1.0f),
-                new Shader(
-                    File.ReadAllText("Resources/Shaders/shader.vert"), 
-                    File.ReadAllText("Resources/Shaders/simple-color.frag")));
-            
-            _scene.LampCube.VertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_scene.LampCube.VertexArrayObject);
-
-            var positionLocation = _scene.LampCube.Material.Shader.GetAttribLocation("aPos");
-            GL.EnableVertexAttribArray(positionLocation);
-            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+            _scene.LampCube.Material = new SimpleColorMaterial(new Vector3(1.0f, 1.0f, 1.0f));
+            _scene.LampCube.GenerateVertexObjectBuffer();
+            _scene.LampCube.GenerateVertexArrayObjectForPosNormTexVbo(_scene.Shaders["lamp"]);
         }
 
         #endregion
         
         CursorState = CursorState.Grabbed;
-    }
-
-    private int GenerateVAOForPosTexVBOs(IShader shader)
-    {
-        var vao = GL.GenVertexArray();
-        
-        GL.BindVertexArray(vao);
-
-        var positionLocation = shader.GetAttribLocation("aPos");
-        GL.EnableVertexAttribArray(positionLocation);
-        GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-            
-        var texCoordLocation = shader.GetAttribLocation("aTexCoords");
-        GL.EnableVertexAttribArray(texCoordLocation);
-        GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-
-        return vao;
-    }
-
-    
-    private int GenerateVAOForPosNormTexVBOs(IShader shader)
-    {
-        var vao = GL.GenVertexArray();
-        
-        GL.BindVertexArray(vao);
-
-        var positionLocation = shader.GetAttribLocation("aPos");
-        GL.EnableVertexAttribArray(positionLocation);
-        GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
-
-        var normalLocation = shader.GetAttribLocation("aNormal");
-        GL.EnableVertexAttribArray(normalLocation);
-        GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-
-        var texCoordLocation = shader.GetAttribLocation("aTexCoords");
-        GL.EnableVertexAttribArray(texCoordLocation);
-        GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-        
-        return vao;
     }
     
 
@@ -191,63 +135,30 @@ public class Window : GameWindow
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         _scene.Skybox?.Render();
-        RenderScene();
+        RenderCubes();
         RenderLamps();
 
         SwapBuffers();
     }
     
 
-    private void RenderScene()
+    private void RenderCubes()
     {
-        var viewMatrix = _camera.GetViewMatrix();
-        var projectionMatrix = _camera.GetProjectionMatrix();
-        var cameraPosition = _camera.Position;
-        
-        // ---
-        
-        var material = _cubes[0].Material;
-        
-        material.Use();
-
-        material.Shader.SetMatrix4("view", viewMatrix);
-        material.Shader.SetMatrix4("projection", projectionMatrix);
-        material.Shader.SetVector3("viewPos", cameraPosition);
-        
-        /*
-           Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
-           the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
-           by defining light types as classes and set their values in there, or by using a more efficient uniform approach
-           by using 'Uniform buffer objects', but that is something we'll discuss in the 'Advanced GLSL' tutorial.
-        */
-        
-        // Directional light
-        UpdateDirectionalLightUniforms(material.Shader, _scene.DirectionalLight);
-
-        // Point lights
-        foreach (var pointLight in _scene.PointLights)
-        {
-            UpdatePointLightUniforms(material.Shader, pointLight);
-        }
-
-        // Spot light
-        _scene.SpotLight.Position = _camera.Position;
-        _scene.SpotLight.Direction = _camera.Front;
-        UpdateSpotLightUniforms(material.Shader, _scene.SpotLight);
+        var shader = _scene.Shaders["cube"];
         
         // Draw the cubes
         var cubeIndex = 0;
         foreach (var cube in _cubes)
         {
-            GL.BindVertexArray(cube.VertexArrayObject);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
-                
-            Matrix4 model = Matrix4.CreateTranslation(cube.Position);
-            float angle = 20.0f * cubeIndex;
+            var model = Matrix4.CreateTranslation(cube.Position);
+            var angle = 20.0f * cubeIndex;
             model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
-            material.Shader.SetMatrix4("model", model);
-
-            // 36 = 6 sides * 2 triangles * 3 vertices.
+            cube.ModelMatrix = model;
+           
+            shader.Use(_scene, cube);
+            
+            GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
+            GL.BindVertexArray(cube.VertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, cube.IndicesCount);
             
             cubeIndex++;
@@ -259,59 +170,24 @@ public class Window : GameWindow
     {
         GL.BindVertexArray(_scene.LampCube.VertexArrayObject);
 
-        _scene.LampCube.Material.Use();
-
-        var shader = _scene.LampCube.Material.Shader;
-        
-        shader.SetMatrix4("view", _camera.GetViewMatrix());
-        shader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+        var shader = _scene.Shaders["lamp"];
         
         // We use a loop to draw all the lights at the proper position
         GL.BindBuffer(BufferTarget.ArrayBuffer, _scene.LampCube.VertexBufferObject); // All lamps use the same VBO.
         foreach (var pointLight in _scene.PointLights)
         {
-            shader.SetMatrix4(
-                "model",
-                Matrix4.CreateScale(0.2f) * Matrix4.CreateTranslation(pointLight.Position));
+            // shader.SetMatrix4(
+            //     "model",
+            //     Matrix4.CreateScale(0.2f) * Matrix4.CreateTranslation(pointLight.Position));
+            _scene.LampCube.ModelMatrix = Matrix4.CreateTranslation(pointLight.Position);
+            
+            shader.Use(_scene, _scene.LampCube);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, _scene.LampCube.IndicesCount);
         }
     }
 
-
-    private void UpdateSpotLightUniforms(IShader lightingShader, SpotLight spotLight)
-    {
-        lightingShader.SetVector3(spotLight.PositionUniformName, spotLight.Position);
-        lightingShader.SetVector3(spotLight.DirectionUniformName, spotLight.Direction);
-        lightingShader.SetVector3(spotLight.AmbientUniformName, spotLight.Ambient);
-        lightingShader.SetVector3(spotLight.DiffuseUniformName, spotLight.Diffuse);
-        lightingShader.SetVector3(spotLight.SpecularUniformName, spotLight.Specular);
-        lightingShader.SetFloat(spotLight.ConstantUniformName, spotLight.Constant);
-        lightingShader.SetFloat(spotLight.LinearUniformName, spotLight.Linear);
-        lightingShader.SetFloat(spotLight.QuadraticUniformName, spotLight.Quadratic);
-        lightingShader.SetFloat(spotLight.CutOffUniformName, spotLight.CutOff);
-        lightingShader.SetFloat(spotLight.OuterCutOffUniformName, spotLight.OuterCutOff);
-    }
-
-    private void UpdateDirectionalLightUniforms(IShader lightingShader, DirectionalLight directionalLight)
-    {
-        lightingShader.SetVector3(directionalLight.DirectionUniformName, directionalLight.Direction);
-        lightingShader.SetVector3(directionalLight.AmbientUniformName, directionalLight.Ambient);
-        lightingShader.SetVector3(directionalLight.DiffuseUniformName, directionalLight.Diffuse);
-        lightingShader.SetVector3(directionalLight.SpecularUniformName, directionalLight.Specular);
-    }
-
-    private void UpdatePointLightUniforms(IShader lightingShader, PointLight pointLight)
-    {
-        lightingShader.SetVector3(pointLight.PositionUniformName, pointLight.Position);
-        lightingShader.SetVector3(pointLight.AmbientUniformName, pointLight.Ambient);
-        lightingShader.SetVector3(pointLight.DiffuseUniformName, pointLight.Diffuse);
-        lightingShader.SetVector3(pointLight.SpecularUniformName, pointLight.Specular);
-        lightingShader.SetFloat(pointLight.ConstantUniformName, pointLight.Constant);
-        lightingShader.SetFloat(pointLight.LinearUniformName, pointLight.Linear);
-        lightingShader.SetFloat(pointLight.QuadraticUniformName, pointLight.Quadratic);
-    }
-
+    
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         base.OnUpdateFrame(e);

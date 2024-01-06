@@ -1,3 +1,5 @@
+using LightsTestTk.Models.Materials;
+
 namespace LightsTestTk.Models.Lights;
 
 using OpenTK.Mathematics;
@@ -12,12 +14,16 @@ public class DirectionalLight : ILight
     public IGameObject? Parent { get; set; }
     public IList<IGameObject> Children { get; }
     
+    public IMaterial Material { get; }
+    
     /// <summary>
     /// Position relative to the parent.
     /// NOTE: This is not used for directional lights.
     /// </summary>
     public Vector3 Position { get; set; }
-    
+
+    public Matrix4 ModelMatrix { get; set; }
+
     public Vector3 Direction { get; set; }
     public string DirectionUniformName { get; }
 
@@ -31,11 +37,23 @@ public class DirectionalLight : ILight
     public string SpecularUniformName { get; }
     
     
+    #region Geometry
+
+    public float[] Vertices { get; } = Array.Empty<float>();
+    public int VertexBufferObject { get; set; } = -1;
+    public int VertexArrayObject { get; set; } = -1;
+    
+    #endregion
+    
+    
     public DirectionalLight()
     {
         Id = 0;
         
         Position = new Vector3();
+        
+        Material = new NullMaterial();
+        ModelMatrix = Matrix4.Identity;
         
         Direction = new Vector3(0.2f, -1.0f, -0.3f);
         DirectionUniformName = $"directionalLight.direction";

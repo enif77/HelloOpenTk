@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 // A simple class meant to help create shaders.
-public sealed class Shader : IDisposable, IShader
+public sealed class Shader : IDisposable
 {
     public readonly int Handle;
 

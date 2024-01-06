@@ -1,30 +1,18 @@
 namespace LightsTestTk.Models.Materials;
 
-using Common;
 using OpenTK.Mathematics;
+
+using Common;
 
 /// <summary>
 /// A material that uses a single color with no lighting. 
 /// </summary>
-public class SimpleColorMaterial(Vector3 color, Shader shader) : IMaterial
+/// <param name="color">A color used by this material.</param>
+public class SimpleColorMaterial(Vector3 color) : IMaterial
 {
-    /// <summary>
-    /// A color used by this material.
-    /// </summary>
     public Vector3 Color { get; } = color;
-    
-    /// <summary>
-    /// A shader used by this material.
-    /// </summary>
-    public IShader Shader { get; } = shader ?? throw new ArgumentNullException(nameof(shader));
-
-
-    /// <summary>
-    /// Uses this material for further rendering.
-    /// </summary>
-    public void Use()
-    {
-        Shader.Use();
-        Shader.SetVector3("color", Color);
-    }
+    public ITexture DiffuseMap { get; } = new NullTexture();
+    public ITexture SpecularMap { get; } = new NullTexture();
+    public Vector3 Specular { get; set; } = Vector3.Zero;
+    public float Shininess { get; set; }
 }

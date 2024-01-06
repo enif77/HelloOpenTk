@@ -82,6 +82,8 @@ public class Cube : IGameObject, IRenderable
     
     public int VertexBufferObject { get; set; }
     public int VertexArrayObject { get; set; }
+    
+    public Matrix4 ModelMatrix { get; set; }
 
     
     public Cube(int id)
@@ -96,29 +98,31 @@ public class Cube : IGameObject, IRenderable
         VertexBufferObject = -1;
         VertexArrayObject = -1;
         
+        ModelMatrix = Matrix4.Identity;
+        
         Position = new Vector3();
         
         Children = new List<IGameObject>();
     }
     
     
-    private Scene? _scene;
+    //private Scene? _scene;
 
     public void Render()
     {
-        _scene ??= this.GetScene();
-        
-        Material.Use();
-        
-        var shader = Material.Shader;
-        var camera =_scene.Camera;
-        
-        shader.SetMatrix4("view", camera.GetViewMatrix());
-        shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-        shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
-        
-        GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-        GL.BindVertexArray(VertexArrayObject);
-        GL.DrawArrays(PrimitiveType.Triangles, 0, IndicesCount);
+        // _scene ??= this.GetScene();
+        //
+        // Material.Use();
+        //
+        // var shader = Material.Shader;
+        // var camera =_scene.Camera;
+        //
+        // shader.SetMatrix4("view", camera.GetViewMatrix());
+        // shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+        // shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
+        //
+        // GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+        // GL.BindVertexArray(VertexArrayObject);
+        // GL.DrawArrays(PrimitiveType.Triangles, 0, IndicesCount);
     }
 }

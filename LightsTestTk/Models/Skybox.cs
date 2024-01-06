@@ -79,6 +79,8 @@ public class Skybox : IGameObject, IRenderable
     
     public int VertexBufferObject { get; set; }
     public int VertexArrayObject { get; set; }
+    
+    public Matrix4 ModelMatrix { get; set; }
 
     
     public Skybox(IMaterial material)
@@ -93,30 +95,32 @@ public class Skybox : IGameObject, IRenderable
         VertexBufferObject = -1;
         VertexArrayObject = -1;
         
+        ModelMatrix = Matrix4.Identity;
+        
         Children = new List<IGameObject>();
     }
 
     
     private Scene? _scene;
-    private Shader? _shader;
+    private IShader? _shader;
 
     public void Render()
     {
         _scene ??= this.GetScene();
         _shader ??= _scene.Shaders["skybox"];
         
-        var camera =_scene.Camera;
+        // Skybox should be rendered at the camera position.
+        ModelMatrix = Matrix4.CreateTranslation(_scene.Camera.Position);
         
         GL.Disable(EnableCap.DepthTest);
         
-        ((SimpleTextureMaterial)Material).DiffuseMap.Use(TextureUnit.Texture0);
+        // Sets shader and its properties.
+        _shader.Use(_scene, this);
         
-        _shader.Use();
-        
-        _shader.SetInt("texture0", 0);
-        _shader.SetMatrix4("view", camera.GetViewMatrix());
-        _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-        _shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
+        // _shader.SetInt("texture0", 0);
+        // _shader.SetMatrix4("view", camera.GetViewMatrix());
+        // _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+        // _shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
         
         GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
         GL.BindVertexArray(VertexArrayObject);

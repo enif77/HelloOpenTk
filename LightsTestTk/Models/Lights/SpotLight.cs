@@ -1,3 +1,5 @@
+using LightsTestTk.Models.Materials;
+
 namespace LightsTestTk.Models.Lights;
 
 using OpenTK.Mathematics;
@@ -11,8 +13,10 @@ public class SpotLight : ILight
     
     public IGameObject? Parent { get; set; }
     public IList<IGameObject> Children { get; }
-    
+    public IMaterial Material { get; }
+
     public Vector3 Position { get; set; }
+    public Matrix4 ModelMatrix { get; set; }
     public string PositionUniformName { get; }
     
     public Vector3 Direction { get; set; }
@@ -43,9 +47,21 @@ public class SpotLight : ILight
     public string OuterCutOffUniformName { get; }
 
 
+    #region Geometry
+
+    public float[] Vertices { get; } = Array.Empty<float>();
+    public int VertexBufferObject { get; set; } = -1;
+    public int VertexArrayObject { get; set; } = -1;
+    
+    #endregion
+    
+    
     public SpotLight()
     {
         Id = 0;
+        
+        Material = new NullMaterial();
+        ModelMatrix = Matrix4.Identity;
         
         Position = new Vector3();
         PositionUniformName = $"spotLight.position";

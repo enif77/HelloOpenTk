@@ -1,5 +1,7 @@
 namespace LightsTestTk.Models.Materials;
 
+using OpenTK.Mathematics;
+
 using Common;
 
 /// <summary>
@@ -7,17 +9,9 @@ using Common;
 /// </summary>
 public class NullMaterial : IMaterial
 {
-    public IShader Shader { get; }
-    
-    
-    public NullMaterial()
-    {
-        Shader = new NullShader();
-    }
-    
-    
-    public void Use()
-    {
-        // Do nothing.
-    }
+    public Vector3 Color => Vector3.Zero;
+    public ITexture DiffuseMap { get; } = new NullTexture();
+    public ITexture SpecularMap { get; } = new NullTexture();
+    public Vector3 Specular { get; set; } = Vector3.Zero;
+    public float Shininess { get; set; }
 }

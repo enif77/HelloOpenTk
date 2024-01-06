@@ -1,4 +1,5 @@
 using LightsTestTk.Models.Lights;
+using LightsTestTk.Models.Materials;
 
 namespace LightsTestTk.Models;
 
@@ -25,12 +26,16 @@ public class Scene : IGameObject
     /// All children of the scene.
     /// </summary>
     public IList<IGameObject> Children { get; }
-    
+
+    public IMaterial Material { get; }
+
     /// <summary>
     /// Unused scene position.
     /// </summary>
     public Vector3 Position { get; set; }
-    
+
+    public Matrix4 ModelMatrix { get; set; }
+
     private Camera _camera;
 
     /// <summary>
@@ -48,7 +53,7 @@ public class Scene : IGameObject
     /// <summary>
     /// All known shaders used in the scene.
     /// </summary>
-    public readonly Dictionary<string, Shader> Shaders = new Dictionary<string, Shader>();
+    public readonly Dictionary<string, IShader> Shaders = new();
     
     public Skybox? Skybox { get; set; }
 
@@ -79,13 +84,24 @@ public class Scene : IGameObject
     ];
     
     
+    #region Geometry
+
+    public float[] Vertices { get; } = Array.Empty<float>();
+    public int VertexBufferObject { get; set; } = -1;
+    public int VertexArrayObject { get; set; } = -1;
+    
+    #endregion
+    
+    
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="camera">A primary scene camera.</param>
     public Scene(Camera camera)
     {
-        Camera = camera;
+        Camera = camera ?? throw new ArgumentNullException(nameof(camera));
+        Material = new NullMaterial();
+        ModelMatrix = Matrix4.Identity;
         Children = new List<IGameObject>();
     }
 }
