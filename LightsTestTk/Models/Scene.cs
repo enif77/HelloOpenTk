@@ -56,8 +56,6 @@ public class Scene : IGameObject, IRenderable
     public readonly Dictionary<string, IShader> Shaders = new();
     
     public Skybox? Skybox { get; set; }
-
-    public Cube LampCube = new Cube(-1);
     
     public DirectionalLight DirectionalLight = new DirectionalLight();
     public SpotLight SpotLight = new SpotLight();

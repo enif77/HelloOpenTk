@@ -1,6 +1,7 @@
 namespace LightsTestTk;
 
 using System.Runtime.InteropServices;
+
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -25,19 +26,19 @@ public class Window : GameWindow
     private Camera _camera;
     private Scene _scene;
     
-    private Cube[] _cubes = new[]
-    {
-        new Cube(0) { Position = new Vector3(0.0f, 0.0f, 0.0f) },
-        new Cube(1) { Position = new Vector3(2.0f, 5.0f, -15.0f) },
-        new Cube(2) { Position = new Vector3(-1.5f, -2.2f, -2.5f) },
-        new Cube(3) { Position = new Vector3(-3.8f, -2.0f, -12.3f) },
-        new Cube(4) { Position = new Vector3(2.4f, -0.4f, -3.5f) },
-        new Cube(5) { Position = new Vector3(-1.7f, 3.0f, -7.5f) },
-        new Cube(6) { Position = new Vector3(1.3f, -2.0f, -2.5f) },
-        new Cube(7) { Position = new Vector3(1.5f, 2.0f, -2.5f) },
-        new Cube(8) { Position = new Vector3(1.5f, 0.2f, -1.5f) },
-        new Cube(9) { Position = new Vector3(-1.3f, 1.0f, -1.5f) }
-    };
+    private readonly List<Cube> _cubes =
+    [
+        new Cube(0) {Position = new Vector3(0.0f, 0.0f, 0.0f)},
+        new Cube(1) {Position = new Vector3(2.0f, 5.0f, -15.0f)},
+        new Cube(2) {Position = new Vector3(-1.5f, -2.2f, -2.5f)},
+        new Cube(3) {Position = new Vector3(-3.8f, -2.0f, -12.3f)},
+        new Cube(4) {Position = new Vector3(2.4f, -0.4f, -3.5f)},
+        new Cube(5) {Position = new Vector3(-1.7f, 3.0f, -7.5f)},
+        new Cube(6) {Position = new Vector3(1.3f, -2.0f, -2.5f)},
+        new Cube(7) {Position = new Vector3(1.5f, 2.0f, -2.5f)},
+        new Cube(8) {Position = new Vector3(1.5f, 0.2f, -1.5f)},
+        new Cube(9) {Position = new Vector3(-1.3f, 1.0f, -1.5f)}
+    ];
     
     private bool _firstMove = true;
     private Vector2 _lastPos;
@@ -80,7 +81,7 @@ public class Window : GameWindow
                 _scene.Shaders["skybox"]));
         
         skybox.GenerateVertexObjectBuffer();
-        skybox.GenerateVertexArrayObjectForPosTexVbo(_scene.Shaders["skybox"]);
+        skybox.GenerateVertexArrayObjectForPosTexVbo(skybox.Material.Shader);
         
         _scene.AddSkybox(skybox);
         
@@ -96,29 +97,43 @@ public class Window : GameWindow
             Texture.LoadFromFile("Resources/Textures/container2_specular.png"),
             _scene.Shaders["cube"]);
 
-        var cubeShader = _scene.Shaders["cube"];
-        
         foreach (var cube in _cubes)
         {
             cube.Material = cubeMaterial;
 
             cube.GenerateVertexObjectBuffer();
-            cube.GenerateVertexArrayObjectForPosNormTexVbo(cubeShader);
+            cube.GenerateVertexArrayObjectForPosNormTexVbo(cubeMaterial.Shader);
             
             _scene.AddChild(cube);
         }
         
         #endregion
         
-
+        
+        #region Lamps
+        
+        var lampMaterial = new SimpleColorMaterial(
+            new Vector3(1.0f, 1.0f, 1.0f),
+            _scene.Shaders["lamp"]);
+        
+        foreach (var pointLight in _scene.PointLights)
         {
-            _scene.LampCube.Material = new SimpleColorMaterial(
-                new Vector3(1.0f, 1.0f, 1.0f),
-                _scene.Shaders["lamp"]);
-            _scene.LampCube.GenerateVertexObjectBuffer();
-            _scene.LampCube.GenerateVertexArrayObjectForPosNormTexVbo(_scene.Shaders["lamp"]);
+            var lamp = new Cube(-1)
+            {
+                Material = lampMaterial,
+                Position = pointLight.Position
+            };
+        
+            lamp.GenerateVertexObjectBuffer();
+            lamp.GenerateVertexArrayObjectForPosNormTexVbo(lampMaterial.Shader);
+            
+            _cubes.Add(lamp);
+            
+            _scene.AddChild(lamp);
         }
-
+        
+        #endregion
+        
         #endregion
         
         CursorState = CursorState.Grabbed;
@@ -142,8 +157,6 @@ public class Window : GameWindow
         UpdateCubes();
         
         _scene.Render();
-        
-        RenderLamps();
 
         SwapBuffers();
     }
@@ -155,33 +168,19 @@ public class Window : GameWindow
         foreach (var cube in _cubes)
         {
             var model = Matrix4.CreateTranslation(cube.Position);
-            var angle = 20.0f * cubeIndex;
-            model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
-            cube.ModelMatrix = model;
-           
-            cubeIndex++;
-        }
-    }
-
-    
-    private void RenderLamps()
-    {
-        GL.BindVertexArray(_scene.LampCube.VertexArrayObject);
-
-        var shader = _scene.Shaders["lamp"];
-        
-        // We use a loop to draw all the lights at the proper position
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _scene.LampCube.VertexBufferObject); // All lamps use the same VBO.
-        foreach (var pointLight in _scene.PointLights)
-        {
-            // shader.SetMatrix4(
-            //     "model",
-            //     Matrix4.CreateScale(0.2f) * Matrix4.CreateTranslation(pointLight.Position));
-            _scene.LampCube.ModelMatrix = Matrix4.CreateTranslation(pointLight.Position);
             
-            shader.Use(_scene, _scene.LampCube);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, _scene.LampCube.IndicesCount);
+            if (cube.Id == -1)
+            {
+                cube.ModelMatrix = model;
+            }
+            else
+            {
+                var angle = 20.0f * cubeIndex;
+                model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
+                cube.ModelMatrix = model;
+           
+                cubeIndex++;    
+            }
         }
     }
 
