@@ -33,4 +33,9 @@ public interface IMaterial
     /// Shininess of this material.
     /// </summary>
     float Shininess { get; set; }
+    
+    /// <summary>
+    /// Shader to be used for rendering of this material.
+    /// </summary>
+    IShader Shader { get; }
 }

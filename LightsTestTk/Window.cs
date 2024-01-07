@@ -75,7 +75,9 @@ public class Window : GameWindow
         #region Skybox
         
         var skybox = new Skybox(
-            new SimpleTextureMaterial(Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg")));
+            new SimpleTextureMaterial(
+                Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
+                _scene.Shaders["skybox"]));
         
         skybox.GenerateVertexObjectBuffer();
         skybox.GenerateVertexArrayObjectForPosTexVbo(_scene.Shaders["skybox"]);
@@ -91,7 +93,8 @@ public class Window : GameWindow
         
         var cubeMaterial = new Material(
             Texture.LoadFromFile("Resources/Textures/container2.png"),
-            Texture.LoadFromFile("Resources/Textures/container2_specular.png"));
+            Texture.LoadFromFile("Resources/Textures/container2_specular.png"),
+            _scene.Shaders["cube"]);
 
         var cubeShader = _scene.Shaders["cube"];
         
@@ -109,7 +112,9 @@ public class Window : GameWindow
         
 
         {
-            _scene.LampCube.Material = new SimpleColorMaterial(new Vector3(1.0f, 1.0f, 1.0f));
+            _scene.LampCube.Material = new SimpleColorMaterial(
+                new Vector3(1.0f, 1.0f, 1.0f),
+                _scene.Shaders["lamp"]);
             _scene.LampCube.GenerateVertexObjectBuffer();
             _scene.LampCube.GenerateVertexArrayObjectForPosNormTexVbo(_scene.Shaders["lamp"]);
         }
@@ -134,19 +139,18 @@ public class Window : GameWindow
         
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        _scene.Skybox?.Render();
-        RenderCubes();
+        UpdateCubes();
+        
+        _scene.Render();
+        
         RenderLamps();
 
         SwapBuffers();
     }
     
 
-    private void RenderCubes()
+    private void UpdateCubes()
     {
-        var shader = _scene.Shaders["cube"];
-        
-        // Draw the cubes
         var cubeIndex = 0;
         foreach (var cube in _cubes)
         {
@@ -155,12 +159,6 @@ public class Window : GameWindow
             model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
             cube.ModelMatrix = model;
            
-            shader.Use(_scene, cube);
-            
-            GL.BindBuffer(BufferTarget.ArrayBuffer, cube.VertexBufferObject);
-            GL.BindVertexArray(cube.VertexArrayObject);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, cube.IndicesCount);
-            
             cubeIndex++;
         }
     }

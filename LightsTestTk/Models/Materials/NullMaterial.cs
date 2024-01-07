@@ -4,6 +4,8 @@ using OpenTK.Mathematics;
 
 using Common;
 
+using LightsTestTk.Models.Shaders;
+
 /// <summary>
 /// A material that does nothing. 
 /// </summary>
@@ -14,4 +16,5 @@ public class NullMaterial : IMaterial
     public ITexture SpecularMap { get; } = new NullTexture();
     public Vector3 Specular { get; set; } = Vector3.Zero;
     public float Shininess { get; set; }
+    public IShader Shader { get; } = new NullShader();
 }

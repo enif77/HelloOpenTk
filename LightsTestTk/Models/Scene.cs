@@ -1,16 +1,16 @@
-using LightsTestTk.Models.Lights;
-using LightsTestTk.Models.Materials;
-
 namespace LightsTestTk.Models;
 
 using OpenTK.Mathematics;
 
 using Common;
 
+using LightsTestTk.Models.Lights;
+using LightsTestTk.Models.Materials;
+
 /// <summary>
 /// Scene is the parent for all game objects.
 /// </summary>
-public class Scene : IGameObject
+public class Scene : IGameObject, IRenderable
 {
     /// <summary>
     /// Scene cannot have a parent.
@@ -103,5 +103,21 @@ public class Scene : IGameObject
         Material = new NullMaterial();
         ModelMatrix = Matrix4.Identity;
         Children = new List<IGameObject>();
+    }
+
+    
+    public void Render()
+    {
+        Skybox?.Render();
+
+        foreach (var child in Children)
+        {
+            if (child is not IRenderable renderableChild)
+            {
+                continue;
+            }
+
+            renderableChild.Render();
+        }
     }
 }

@@ -102,30 +102,26 @@ public class Skybox : IGameObject, IRenderable
 
     
     private Scene? _scene;
-    private IShader? _shader;
 
     public void Render()
     {
         _scene ??= this.GetScene();
-        _shader ??= _scene.Shaders["skybox"];
-        
+
         // Skybox should be rendered at the camera position.
         ModelMatrix = Matrix4.CreateTranslation(_scene.Camera.Position);
         
+        // Skybox should be rendered without depth test.
         GL.Disable(EnableCap.DepthTest);
         
         // Sets shader and its properties.
-        _shader.Use(_scene, this);
+        Material.Shader.Use(_scene, this);
         
-        // _shader.SetInt("texture0", 0);
-        // _shader.SetMatrix4("view", camera.GetViewMatrix());
-        // _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-        // _shader.SetMatrix4("model", Matrix4.CreateTranslation(camera.Position));
-        
+        // Bind skybox data.
         GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
         GL.BindVertexArray(VertexArrayObject);
         GL.DrawArrays(PrimitiveType.Triangles, 0, IndicesCount);
         
+        // Restore depth test.
         GL.Enable(EnableCap.DepthTest);
     }
 }

@@ -14,12 +14,15 @@ public class Material : IMaterial
     public Vector3 Specular { get; set; }
     public float Shininess { get; set; }
 
-    
-    public Material(ITexture diffuseMap, ITexture specularMap)
+    public IShader Shader { get; }
+
+
+    public Material(ITexture diffuseMap, ITexture specularMap, IShader shader)
     {
         DiffuseMap = diffuseMap ?? throw new ArgumentNullException(nameof(diffuseMap));
         SpecularMap = specularMap ?? throw new ArgumentNullException(nameof(specularMap));
         Specular = new Vector3(0.5f, 0.5f, 0.5f);
         Shininess = 32.0f;
+        Shader = shader ?? throw new ArgumentNullException(nameof(shader));
     }
 }
