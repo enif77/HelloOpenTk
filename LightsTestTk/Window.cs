@@ -81,7 +81,7 @@ public class Window : GameWindow
                 _scene.Shaders["skybox"]));
         
         skybox.GenerateVertexObjectBuffer();
-        skybox.GenerateVertexArrayObjectForPosTexVbo(skybox.Material.Shader);
+        skybox.GenerateVertexArrayObjectForPosTexVbo();
         
         _scene.AddSkybox(skybox);
         
@@ -102,7 +102,7 @@ public class Window : GameWindow
             cube.Material = cubeMaterial;
 
             cube.GenerateVertexObjectBuffer();
-            cube.GenerateVertexArrayObjectForPosNormTexVbo(cubeMaterial.Shader);
+            cube.GenerateVertexArrayObjectForPosNormTexVbo();
             
             _scene.AddChild(cube);
         }
@@ -125,7 +125,7 @@ public class Window : GameWindow
             };
         
             lamp.GenerateVertexObjectBuffer();
-            lamp.GenerateVertexArrayObjectForPosNormTexVbo(lampMaterial.Shader);
+            lamp.GenerateVertexArrayObjectForPosNormTexVbo();
             
             _cubes.Add(lamp);
             

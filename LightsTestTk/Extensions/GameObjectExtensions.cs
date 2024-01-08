@@ -1,8 +1,12 @@
-using LightsTestTk.Models;
-using OpenTK.Graphics.OpenGL4;
-
 namespace LightsTestTk.Extensions;
 
+using OpenTK.Graphics.OpenGL4;
+
+using LightsTestTk.Models;
+
+/// <summary>
+/// Game object related extensions.
+/// </summary>
 public static class GameObjectExtensions
 {
     /// <summary>
@@ -32,48 +36,20 @@ public static class GameObjectExtensions
     /// <exception cref="InvalidOperationException">Thrown, when such child already exists in game object children.</exception>
     public static void AddChild(this IGameObject gameObject, IGameObject child)
     {
-        if (child == null) throw new ArgumentNullException(nameof(child));
-        child.Parent = gameObject ?? throw new ArgumentNullException(nameof(gameObject));
-        
+        ArgumentNullException.ThrowIfNull(child);
         if (gameObject.Children.Contains(child))
         {
-            throw new InvalidOperationException("Child already exists.");
+            throw new InvalidOperationException("Child already exists in the parent object.");
         }
-
+        
+        child.Parent = gameObject;
         gameObject.Children.Add(child);
     }
     
     /// <summary>
-    /// Adds a child to a game object.
+    /// Generates a VBO for a game object.
     /// </summary>
-    /// <param name="scene">A scene.</param>
-    /// <param name="skybox">A skybox to be added to a scene.</param>
-    /// <exception cref="InvalidOperationException">Thrown, when such child already exists in game object children.</exception>
-    public static void AddSkybox(this Scene scene, Skybox skybox)
-    {
-        if (skybox == null) throw new ArgumentNullException(nameof(skybox));
-        skybox.Parent = scene ?? throw new ArgumentNullException(nameof(scene));
-        scene.Skybox = skybox;
-    }
-
-
-    /// <summary>
-    /// Adds a shader to the scene.
-    /// </summary>
-    /// <param name="scene">A scene.</param>
-    /// <param name="shader">An IShader instance.</param>
-    /// <exception cref="InvalidOperationException">If a shader with the shaderName exists in the shaders collection.</exception>
-    /// <exception cref="ArgumentException">If the shaderName parameter is null, empty or whitespace.</exception>
-    /// <exception cref="ArgumentNullException">If the shader is null.</exception>
-    public static void AddShader(this Scene scene, IShader shader)
-    {
-        if (shader == null) throw new ArgumentNullException(nameof(shader));
-        if (scene.Shaders.ContainsKey(shader.Name)) throw new InvalidOperationException($"Shader with the '{shader.Name}' name already exists.");
-        
-        scene.Shaders.Add(shader.Name, shader);
-    }
-    
-    
+    /// <param name="gameObject">A game object instance.</param>
     public static void GenerateVertexObjectBuffer(this IGameObject gameObject)
     {
         gameObject.VertexBufferObject = GL.GenBuffer();
@@ -81,11 +57,14 @@ public static class GameObjectExtensions
         GL.BufferData(BufferTarget.ArrayBuffer, gameObject.Vertices.Length * sizeof(float), gameObject.Vertices, BufferUsageHint.StaticDraw);
     }
     
-    
-    public static void GenerateVertexArrayObjectForPosTexVbo(this IGameObject gameObject, IShader shader)
+    /// <summary>
+    /// Generates a VAO for a game object with position-texture VBO format.
+    /// </summary>
+    /// <param name="gameObject">A game object instance.</param>
+    /// <exception cref="InvalidOperationException">When vertex object buffer is not initialized yet.</exception>
+    /// <exception cref="InvalidOperationException">When vertex array object is already initialized.</exception>
+    public static void GenerateVertexArrayObjectForPosTexVbo(this IGameObject gameObject)
     {
-        if (shader == null) throw new ArgumentNullException(nameof(shader));
-        
         if (gameObject.VertexBufferObject <= 0)
         {
             throw new InvalidOperationException("Vertex buffer object is not initialized.");
@@ -102,6 +81,8 @@ public static class GameObjectExtensions
         
         GL.BindVertexArray(gameObject.VertexArrayObject);
 
+        var shader = gameObject.Material.Shader;
+        
         var positionLocation = shader.GetAttributeLocation("aPos");
         GL.EnableVertexAttribArray(positionLocation);
         GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
@@ -111,11 +92,14 @@ public static class GameObjectExtensions
         GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
     }
     
-    
-    public static void GenerateVertexArrayObjectForPosNormTexVbo(this IGameObject gameObject, IShader shader)
+    /// <summary>
+    /// Generates a VAO for a game object with position-normal-texture VBO format.
+    /// </summary>
+    /// <param name="gameObject">A game object instance.</param>
+    /// <exception cref="InvalidOperationException">When vertex object buffer is not initialized yet.</exception>
+    /// <exception cref="InvalidOperationException">When vertex array object is already initialized.</exception>
+    public static void GenerateVertexArrayObjectForPosNormTexVbo(this IGameObject gameObject)
     {
-        if (shader == null) throw new ArgumentNullException(nameof(shader));
-        
         if (gameObject.VertexBufferObject <= 0)
         {
             throw new InvalidOperationException("Vertex buffer object is not initialized.");
@@ -132,6 +116,8 @@ public static class GameObjectExtensions
         
         GL.BindVertexArray(gameObject.VertexArrayObject);
 
+        var shader = gameObject.Material.Shader;
+        
         var positionLocation = shader.GetAttributeLocation("aPos");
         GL.EnableVertexAttribArray(positionLocation);
         GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
