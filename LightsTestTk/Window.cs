@@ -112,15 +112,26 @@ public class Window : GameWindow
         
         #region Lamps
         
+        _scene.CreatePointLight(new Vector3(0.7f, 0.2f, 2.0f));
+        _scene.CreatePointLight(new Vector3(2.3f, -3.3f, -4.0f));
+        _scene.CreatePointLight(new Vector3(-4.0f, 2.0f, -12.0f));
+        var redLight = _scene.CreatePointLight(new Vector3(0.0f, 0.0f, -3.0f));
+        redLight.Diffuse = new Vector3(1.0f, 0.0f, 0.0f);
+        
         var lampMaterial = new SimpleColorMaterial(
             new Vector3(1.0f, 1.0f, 1.0f),
             _scene.Shaders["lamp"]);
         
+        var redLampMaterial = new SimpleColorMaterial(
+            new Vector3(1.0f, 0.0f, 0.0f),
+            _scene.Shaders["lamp"]);
+
+        var lapId = 0;
         foreach (var pointLight in _scene.PointLights)
         {
             var lamp = new Cube(-1)
             {
-                Material = lampMaterial,
+                Material = (lapId > 2) ? redLampMaterial : lampMaterial,
                 Position = pointLight.Position
             };
         
@@ -130,6 +141,8 @@ public class Window : GameWindow
             _cubes.Add(lamp);
             
             _scene.AddChild(lamp);
+            
+            lapId++;
         }
         
         #endregion

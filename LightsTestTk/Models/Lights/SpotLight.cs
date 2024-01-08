@@ -2,19 +2,8 @@ namespace LightsTestTk.Models.Lights;
 
 using OpenTK.Mathematics;
 
-using LightsTestTk.Models.Materials;
-
 public class SpotLight : ILight
 {
-    /// <summary>
-    /// The index of the light in the shader.
-    /// </summary>
-    public int Id { get; }
-    
-    public IGameObject? Parent { get; set; }
-    public IList<IGameObject> Children { get; }
-    public IMaterial Material { get; }
-
     public Vector3 Position { get; set; }
     public string PositionUniformName { get; }
     
@@ -44,25 +33,10 @@ public class SpotLight : ILight
     
     public float OuterCutOff { get; set; }
     public string OuterCutOffUniformName { get; }
-
-    public Matrix4 ModelMatrix { get; set; }
-
-    #region Geometry
-
-    public float[] Vertices { get; } = Array.Empty<float>();
-    public int VertexBufferObject { get; set; } = -1;
-    public int VertexArrayObject { get; set; } = -1;
-    
-    #endregion
     
     
     public SpotLight()
     {
-        Id = 0;
-        
-        Material = new NullMaterial();
-        ModelMatrix = Matrix4.Identity;
-        
         Position = new Vector3();
         PositionUniformName = $"spotLight.position";
         
@@ -73,6 +47,7 @@ public class SpotLight : ILight
         AmbientUniformName = $"spotLight.ambient";
         
         Diffuse = new Vector3(1.0f, 1.0f, 1.0f);
+        //Diffuse = new Vector3(1.0f, 0.0f, 1.0f);
         DiffuseUniformName = $"spotLight.diffuse";
         
         Specular = new Vector3(1.0f, 1.0f, 1.0f);
@@ -88,11 +63,11 @@ public class SpotLight : ILight
         QuadraticUniformName = $"spotLight.quadratic";
         
         CutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
+        //CutOff = MathF.Cos(MathHelper.DegreesToRadians(359f));
         CutOffUniformName = $"spotLight.cutOff";
         
         OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
+        //OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(360f));
         OuterCutOffUniformName = $"spotLight.outerCutOff";
-        
-        Children = new List<IGameObject>();
     }
 }

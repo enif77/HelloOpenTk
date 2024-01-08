@@ -60,26 +60,8 @@ public class Scene : IGameObject, IRenderable
     public DirectionalLight DirectionalLight = new DirectionalLight();
     public SpotLight SpotLight = new SpotLight();
     
-    // We need the point lights' positions to draw the lamps and to get light the materials properly
-    public PointLight[] PointLights =
-    [
-        new PointLight(0)
-        {
-            Position = new Vector3(0.7f, 0.2f, 2.0f),
-        },
-        new PointLight(1)
-        {
-            Position = new Vector3(2.3f, -3.3f, -4.0f),
-        },
-        new PointLight(2)
-        {
-            Position = new Vector3(-4.0f, 2.0f, -12.0f),
-        },
-        new PointLight(3)
-        {
-            Position = new Vector3(0.0f, 0.0f, -3.0f),
-        }
-    ];
+    public readonly int MaxPointLights = Defaults.DefaultMaxPointLights;
+    public readonly IList<PointLight> PointLights = new List<PointLight>();
     
     
     #region Geometry

@@ -1,3 +1,6 @@
+using LightsTestTk.Models.Lights;
+using OpenTK.Mathematics;
+
 namespace LightsTestTk.Extensions;
 
 using LightsTestTk.Models;
@@ -21,6 +24,29 @@ public static class SceneExtensions
         scene.Skybox = skybox;
     }
 
+    /// <summary>
+    /// Creates and adds a point light to the scene.
+    /// </summary>
+    /// <param name="scene">A scene.</param>
+    /// <param name="position">An optional position of the new light.</param>
+    /// <returns>A newly created point light.</returns>
+    /// <exception cref="InvalidOperationException">If the MaxPointLights point lights are already in this scene.</exception>
+    public static PointLight CreatePointLight(this Scene scene, Vector3 position = default)
+    {
+        if (scene.PointLights.Count >= scene.MaxPointLights)
+        {
+            throw new InvalidOperationException($"Only {scene.MaxPointLights} point lights are supported.");
+        }
+        
+        var pointLight = new PointLight(scene.PointLights.Count)
+        {
+            Position = position
+        };
+        
+        scene.PointLights.Add(pointLight);
+        
+        return pointLight;
+    }
 
     /// <summary>
     /// Adds a shader to the scene.
