@@ -1,8 +1,8 @@
-using LightsTestTk.Models.Materials;
-
 namespace LightsTestTk.Models.Lights;
 
 using OpenTK.Mathematics;
+
+using LightsTestTk.Models.Materials;
 
 public class SpotLight : ILight
 {
@@ -16,7 +16,6 @@ public class SpotLight : ILight
     public IMaterial Material { get; }
 
     public Vector3 Position { get; set; }
-    public Matrix4 ModelMatrix { get; set; }
     public string PositionUniformName { get; }
     
     public Vector3 Direction { get; set; }
@@ -46,6 +45,7 @@ public class SpotLight : ILight
     public float OuterCutOff { get; set; }
     public string OuterCutOffUniformName { get; }
 
+    public Matrix4 ModelMatrix { get; set; }
 
     #region Geometry
 

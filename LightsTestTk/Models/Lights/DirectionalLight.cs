@@ -1,8 +1,8 @@
-using LightsTestTk.Models.Materials;
-
 namespace LightsTestTk.Models.Lights;
 
 using OpenTK.Mathematics;
+
+using LightsTestTk.Models.Materials;
 
 public class DirectionalLight : ILight
 {

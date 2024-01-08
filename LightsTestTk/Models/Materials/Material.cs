@@ -1,7 +1,8 @@
 namespace LightsTestTk.Models.Materials;
 
-using Common;
 using OpenTK.Mathematics;
+
+using Common;
 
 /// <summary>
 /// A material that uses multiple textures with lighting. 

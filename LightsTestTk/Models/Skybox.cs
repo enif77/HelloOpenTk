@@ -1,11 +1,9 @@
-using Common;
-using LightsTestTk.Extensions;
-using LightsTestTk.Models.Materials;
-using OpenTK.Graphics.OpenGL4;
-
 namespace LightsTestTk.Models;
 
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+
+using LightsTestTk.Extensions;
 
 /// <summary>
 /// Skybox.
