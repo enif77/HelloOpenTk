@@ -34,9 +34,12 @@ struct PointLight
     float quadratic;
 };
 
-// We have a total of 4 point lights now, so we define a preprossecor directive to tell the gpu the size of our point light array
-#define NR_POINT_LIGHTS 4
+// We have a total of 16 point lights now, so we define a preprossecor directive to tell the gpu the size of our point light array
+#define NR_POINT_LIGHTS 16
 uniform PointLight pointLights[NR_POINT_LIGHTS];
+
+// This is the number of point lights we have, we need this to loop through the point lights in the main function.
+uniform int numPointLights;
 
 // This is our spotlight where we need the position, attenuation along with the cutoff and the outer cutoff. Plus the direction of the light
 struct SpotLight
@@ -84,7 +87,7 @@ void main()
     vec3 result = CalcDirLight(directionalLight, norm, viewDir);
     
     // phase 2: Point lights
-    for (int i = 0; i < NR_POINT_LIGHTS; i++)
+    for (int i = 0; i < clamp(numPointLights, 0, NR_POINT_LIGHTS); i++)
     {
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
     }

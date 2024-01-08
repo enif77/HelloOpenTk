@@ -69,7 +69,7 @@ public class Window : GameWindow
         _scene.AddShader(new NullShader());
         _scene.AddShader(new SkyboxShader());
         _scene.AddShader(new LampShader());
-        _scene.AddShader(new CubeShader());
+        _scene.AddShader(new CubeShader() { ActivePointLightsCount = 4 });
         
         #endregion
         

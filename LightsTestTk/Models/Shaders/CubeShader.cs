@@ -12,6 +12,7 @@ public class CubeShader : IShader
 
     public string Name => "cube";
     
+    public int ActivePointLightsCount { get; set; }
     
     public CubeShader()
     {
@@ -39,6 +40,8 @@ public class CubeShader : IShader
         
         _shader.SetInt("material.diffuse", 0);
         _shader.SetInt("material.specular", 1);
+        
+        _shader.SetInt("numPointLights", ActivePointLightsCount);
         
         _shader.SetVector3("material.specular", material.Specular);
         _shader.SetFloat("material.shininess", material.Shininess);
