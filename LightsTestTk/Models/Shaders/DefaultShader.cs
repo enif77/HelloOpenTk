@@ -6,19 +6,18 @@ using Common;
 
 using LightsTestTk.Models.Lights;
 
-public class CubeShader : IShader
+public class DefaultShader : IShader
 {
     private readonly Shader _shader;
 
     public string Name => "cube";
     
-    public int ActivePointLightsCount { get; set; }
-    
-    public CubeShader()
+
+    public DefaultShader()
     {
         _shader = new Shader(
             File.ReadAllText("Resources/Shaders/shader.vert"),
-            File.ReadAllText("Resources/Shaders/lighting.frag"));
+            File.ReadAllText("Resources/Shaders/default.frag"));
     }
 
     
@@ -41,7 +40,7 @@ public class CubeShader : IShader
         _shader.SetInt("material.diffuse", 0);
         _shader.SetInt("material.specular", 1);
         
-        _shader.SetInt("numPointLights", ActivePointLightsCount);
+        _shader.SetInt("numPointLights", scene.PointLights.Count);
         
         _shader.SetVector3("material.specular", material.Specular);
         _shader.SetFloat("material.shininess", material.Shininess);
@@ -64,28 +63,35 @@ public class CubeShader : IShader
         // Point lights
         foreach (var pointLight in scene.PointLights)
         {
-            UpdatePointLightUniforms(pointLight);
+            //UpdatePointLightUniforms(pointLight);
+            UpdateSpotLightUniforms(pointLight);
         }
 
-        // Spot light
-        scene.SpotLight.Position = camera.Position;
-        scene.SpotLight.Direction = camera.Front;
-        UpdateSpotLightUniforms(scene.SpotLight);
+        // // Spot light
+        // scene.SpotLight.Position = camera.Position;
+        // scene.SpotLight.Direction = camera.Front;
+        // UpdateSpotLightUniforms(scene.SpotLight);
     }
     
     
     private void UpdateSpotLightUniforms(SpotLight spotLight)
     {
+        _shader.SetInt(spotLight.IsSpotLightUniformName, spotLight.IsSpotLight ? 1 : 0);
+        
         _shader.SetVector3(spotLight.PositionUniformName, spotLight.Position);
-        _shader.SetVector3(spotLight.DirectionUniformName, spotLight.Direction);
         _shader.SetVector3(spotLight.AmbientUniformName, spotLight.Ambient);
         _shader.SetVector3(spotLight.DiffuseUniformName, spotLight.Diffuse);
         _shader.SetVector3(spotLight.SpecularUniformName, spotLight.Specular);
         _shader.SetFloat(spotLight.ConstantUniformName, spotLight.Constant);
         _shader.SetFloat(spotLight.LinearUniformName, spotLight.Linear);
         _shader.SetFloat(spotLight.QuadraticUniformName, spotLight.Quadratic);
-        _shader.SetFloat(spotLight.CutOffUniformName, spotLight.CutOff);
-        _shader.SetFloat(spotLight.OuterCutOffUniformName, spotLight.OuterCutOff);
+
+        if (spotLight.IsSpotLight)
+        {
+            _shader.SetVector3(spotLight.DirectionUniformName, spotLight.Direction);
+            _shader.SetFloat(spotLight.CutOffUniformName, spotLight.CutOff);
+            _shader.SetFloat(spotLight.OuterCutOffUniformName, spotLight.OuterCutOff);
+        }
     }
 
     private void UpdateDirectionalLightUniforms(DirectionalLight directionalLight)

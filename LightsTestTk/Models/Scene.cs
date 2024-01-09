@@ -58,10 +58,10 @@ public class Scene : IGameObject, IRenderable
     public Skybox? Skybox { get; set; }
     
     public DirectionalLight DirectionalLight = new DirectionalLight();
-    public SpotLight SpotLight = new SpotLight();
+    //public SpotLight SpotLight = new SpotLight();
     
     public readonly int MaxPointLights = Defaults.DefaultMaxPointLights;
-    public readonly IList<PointLight> PointLights = new List<PointLight>();
+    public readonly IList<SpotLight> PointLights = new List<SpotLight>();
     
     
     #region Geometry

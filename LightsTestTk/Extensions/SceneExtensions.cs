@@ -31,16 +31,48 @@ public static class SceneExtensions
     /// <param name="position">An optional position of the new light.</param>
     /// <returns>A newly created point light.</returns>
     /// <exception cref="InvalidOperationException">If the MaxPointLights point lights are already in this scene.</exception>
-    public static PointLight CreatePointLight(this Scene scene, Vector3 position = default)
+    public static SpotLight CreatePointLight(this Scene scene, Vector3 position = default)
     {
         if (scene.PointLights.Count >= scene.MaxPointLights)
         {
             throw new InvalidOperationException($"Only {scene.MaxPointLights} point lights are supported.");
         }
         
-        var pointLight = new PointLight(scene.PointLights.Count)
+        var pointLight = new SpotLight(scene.PointLights.Count)
         {
             Position = position
+        };
+        
+        scene.PointLights.Add(pointLight);
+        
+        return pointLight;
+    }
+    
+    /// <summary>
+    /// Creates and adds a spot light to the scene.
+    /// </summary>
+    /// <param name="scene">A scene.</param>
+    /// <param name="position">An optional position of the new light.</param>
+    /// <returns>A newly created point light.</returns>
+    /// <exception cref="InvalidOperationException">If the MaxPointLights point lights are already in this scene.</exception>
+    public static SpotLight CreateSpotLight(this Scene scene, Vector3 position = default)
+    {
+        if (scene.PointLights.Count >= scene.MaxPointLights)
+        {
+            throw new InvalidOperationException($"Only {scene.MaxPointLights} point lights are supported.");
+        }
+        
+        var pointLight = new SpotLight(scene.PointLights.Count, true)
+        {
+            Position = position,
+            Ambient = new Vector3(0.0f, 0.0f, 0.0f),
+            Diffuse = new Vector3(1.0f, 1.0f, 1.0f),
+            Specular = new Vector3(1.0f, 1.0f, 1.0f),
+            Constant = 1.0f,
+            Linear = 0.09f,
+            Quadratic = 0.032f,
+            CutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f)),
+            OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f))
         };
         
         scene.PointLights.Add(pointLight);

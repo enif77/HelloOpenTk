@@ -25,6 +25,7 @@ public class Window : GameWindow
     
     private Camera _camera;
     private Scene _scene;
+    private SpotLight _spotLight;
     
     private readonly List<Cube> _cubes =
     [
@@ -69,7 +70,7 @@ public class Window : GameWindow
         _scene.AddShader(new NullShader());
         _scene.AddShader(new SkyboxShader());
         _scene.AddShader(new LampShader());
-        _scene.AddShader(new CubeShader() { ActivePointLightsCount = 4 });
+        _scene.AddShader(new DefaultShader());
         
         #endregion
         
@@ -111,6 +112,9 @@ public class Window : GameWindow
         
         
         #region Lamps
+        
+        _spotLight = _scene.CreateSpotLight(new Vector3(0.7f, 0.2f, 2.0f));
+        _spotLight.Diffuse = new Vector3(0.0f, 1.0f, 0.0f);
         
         _scene.CreatePointLight(new Vector3(0.7f, 0.2f, 2.0f));
         _scene.CreatePointLight(new Vector3(2.3f, -3.3f, -4.0f));
@@ -177,6 +181,10 @@ public class Window : GameWindow
 
     private void UpdateCubes()
     {
+        // Update the spot light bound to the camera.
+        _spotLight.Position = _scene.Camera.Position;
+        _spotLight.Direction = _scene.Camera.Front;
+        
         var cubeIndex = 0;
         foreach (var cube in _cubes)
         {
