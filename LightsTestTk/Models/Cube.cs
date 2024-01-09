@@ -113,7 +113,7 @@ public class Cube : IGameObject, IRenderable
         
         Material.Shader.Use(_scene, this);
         
-        GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+        //GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
         GL.BindVertexArray(VertexArrayObject);
         GL.DrawArrays(PrimitiveType.Triangles, 0, IndicesCount);
     }

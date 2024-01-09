@@ -115,7 +115,7 @@ public class Skybox : IGameObject, IRenderable
         Material.Shader.Use(_scene, this);
         
         // Bind skybox data.
-        GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+        //GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject); // Bound by VAO below.
         GL.BindVertexArray(VertexArrayObject);
         GL.DrawArrays(PrimitiveType.Triangles, 0, IndicesCount);
         
