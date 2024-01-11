@@ -36,7 +36,10 @@ public static class Program
             WindowState = Settings.EnableFullscreen ? WindowState.Fullscreen : WindowState.Normal
         };
 
-        using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
+        using (var window = new Window(
+                   GameWindowSettings.Default,
+                   nativeWindowSettings,
+                   new Game()))
         {
             window.Run();
         }

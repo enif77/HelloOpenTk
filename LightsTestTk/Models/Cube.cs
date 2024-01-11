@@ -11,11 +11,6 @@ using LightsTestTk.Models.Materials;
 /// </summary>
 public class Cube : IGameObject, IRenderable
 {
-    /// <summary>
-    /// The index of the light in the shader.
-    /// </summary>
-    public int Id { get; }
-    
     public IGameObject? Parent { get; set; }
     public IList<IGameObject> Children { get; }
     
@@ -85,10 +80,8 @@ public class Cube : IGameObject, IRenderable
     public Matrix4 ModelMatrix { get; set; }
 
     
-    public Cube(int id)
+    public Cube()
     {
-        Id = id;
-
         Material = new NullMaterial();
         
         // 36 = 6 sides * 2 triangles per side * 3 vertices per triangle.
