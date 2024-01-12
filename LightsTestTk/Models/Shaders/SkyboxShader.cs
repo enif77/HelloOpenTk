@@ -2,8 +2,6 @@ namespace LightsTestTk.Models.Shaders;
 
 using OpenTK.Graphics.OpenGL4;
 
-using Common;
-
 public class SkyboxShader : IShader
 {
     private readonly Shader _shader;

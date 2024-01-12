@@ -1,9 +1,6 @@
 namespace LightsTestTk.Models.Shaders;
 
 using OpenTK.Graphics.OpenGL4;
-
-using Common;
-
 using LightsTestTk.Models.Lights;
 
 public class DefaultShader : IShader

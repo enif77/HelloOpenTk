@@ -2,9 +2,8 @@ namespace LightsTestTk.Models.Materials;
 
 using OpenTK.Mathematics;
 
-using Common;
-
 using LightsTestTk.Models.Shaders;
+using LightsTestTk.Models.Textures;
 
 /// <summary>
 /// A material that does nothing. 

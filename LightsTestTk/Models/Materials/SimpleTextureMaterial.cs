@@ -2,7 +2,7 @@ namespace LightsTestTk.Models.Materials;
 
 using OpenTK.Mathematics;
 
-using Common;
+using LightsTestTk.Models.Textures;
 
 /// <summary>
 /// A material that uses a single texture with no lighting. 

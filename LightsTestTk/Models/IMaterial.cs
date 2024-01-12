@@ -2,8 +2,6 @@ namespace LightsTestTk.Models;
 
 using OpenTK.Mathematics;
 
-using Common;
-
 /// <summary>
 /// Defines a material used for rendering of an object.
 /// </summary>

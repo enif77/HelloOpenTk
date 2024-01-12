@@ -2,8 +2,6 @@ namespace LightsTestTk.Models.Shaders;
 
 using OpenTK.Mathematics;
 
-using Common;
-
 public class LampShader : IShader
 {
     private readonly Shader _shader;

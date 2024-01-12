@@ -1,13 +1,14 @@
-using Common;
+namespace LightsTestTk;
+
+using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+
 using LightsTestTk.Extensions;
 using LightsTestTk.Models;
 using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
 using LightsTestTk.Models.Shaders;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
-namespace LightsTestTk;
+using LightsTestTk.Models.Textures;
 
 public class Game
 {

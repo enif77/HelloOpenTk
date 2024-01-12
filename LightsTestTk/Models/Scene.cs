@@ -1,9 +1,6 @@
 namespace LightsTestTk.Models;
 
 using OpenTK.Mathematics;
-
-using Common;
-
 using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
 
