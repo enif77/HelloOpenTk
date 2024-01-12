@@ -8,10 +8,10 @@ using LightsTestTk.Extensions;
 /// <summary>
 /// Skybox.
 /// </summary>
-public class Skybox : IGameObject, IRenderable
+public class Skybox : ISceneObject, IRenderable
 {
-    public IGameObject? Parent { get; set; }
-    public IList<IGameObject> Children { get; }
+    public ISceneObject? Parent { get; set; }
+    public IList<ISceneObject> Children { get; }
     
     public Vector3 Position { get; set; }
     
@@ -95,7 +95,7 @@ public class Skybox : IGameObject, IRenderable
         
         ModelMatrix = Matrix4.Identity;
         
-        Children = new List<IGameObject>();
+        Children = new List<ISceneObject>();
     }
 
     

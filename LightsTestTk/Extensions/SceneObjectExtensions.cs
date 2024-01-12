@@ -7,81 +7,81 @@ using LightsTestTk.Models;
 /// <summary>
 /// Game object related extensions.
 /// </summary>
-public static class GameObjectExtensions
+public static class SceneObjectExtensions
 {
     /// <summary>
-    /// Try to get a scene from the game object.
+    /// Try to get a scene from a scene object.
     /// </summary>
-    /// <param name="gameObject">A game object.</param>
-    /// <returns>A Scene instance a game object belongs to.</returns>
+    /// <param name="sceneObject">A scene object.</param>
+    /// <returns>A Scene instance a scene object belongs to.</returns>
     /// <exception cref="InvalidOperationException">When no scene object was found as a parent of a game object.</exception>
-    public static Scene GetScene(this IGameObject gameObject)
+    public static Scene GetScene(this ISceneObject sceneObject)
     {
         while (true)
         {
-            if (gameObject is Scene scene)
+            if (sceneObject is Scene scene)
             {
                 return scene;
             }
 
-            gameObject = gameObject.Parent ?? throw new InvalidOperationException("Scene not found.");
+            sceneObject = sceneObject.Parent ?? throw new InvalidOperationException("Scene not found.");
         }
     }
 
     /// <summary>
-    /// Adds a child to a game object.
+    /// Adds a child to a scene object.
     /// </summary>
-    /// <param name="gameObject">A game object.</param>
+    /// <param name="sceneObject">A scene object.</param>
     /// <param name="child">A child to be added.</param>
-    /// <exception cref="InvalidOperationException">Thrown, when such child already exists in game object children.</exception>
-    public static void AddChild(this IGameObject gameObject, IGameObject child)
+    /// <exception cref="InvalidOperationException">Thrown, when such child already exists in scene object children.</exception>
+    public static void AddChild(this ISceneObject sceneObject, ISceneObject child)
     {
         ArgumentNullException.ThrowIfNull(child);
-        if (gameObject.Children.Contains(child))
+        if (sceneObject.Children.Contains(child))
         {
             throw new InvalidOperationException("Child already exists in the parent object.");
         }
         
-        child.Parent = gameObject;
-        gameObject.Children.Add(child);
+        child.Parent = sceneObject;
+        sceneObject.Children.Add(child);
     }
     
     /// <summary>
-    /// Generates a VBO for a game object.
+    /// Generates a VBO for a scene object.
     /// </summary>
-    /// <param name="gameObject">A game object instance.</param>
-    public static void GenerateVertexObjectBuffer(this IGameObject gameObject)
+    /// <param name="sceneObject">A scene object instance.</param>
+    public static void GenerateVertexObjectBuffer(this ISceneObject sceneObject)
     {
-        gameObject.VertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, gameObject.VertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, gameObject.Vertices.Length * sizeof(float), gameObject.Vertices, BufferUsageHint.StaticDraw);
+        sceneObject.VertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, sceneObject.VertexBufferObject);
+        GL.BufferData(BufferTarget.ArrayBuffer, sceneObject.Vertices.Length * sizeof(float), sceneObject.Vertices, BufferUsageHint.StaticDraw);
     }
     
     /// <summary>
-    /// Generates a VAO for a game object with position-texture VBO format.
+    /// Generates a VAO for a scene object with position-texture VBO format.
     /// </summary>
-    /// <param name="gameObject">A game object instance.</param>
+    /// <param name="sceneObject">A scene object instance.</param>
     /// <exception cref="InvalidOperationException">When vertex object buffer is not initialized yet.</exception>
     /// <exception cref="InvalidOperationException">When vertex array object is already initialized.</exception>
-    public static void GenerateVertexArrayObjectForPosTexVbo(this IGameObject gameObject)
+    public static void GenerateVertexArrayObjectForPosTexVbo(this ISceneObject sceneObject)
     {
-        if (gameObject.VertexBufferObject <= 0)
+        if (sceneObject.VertexBufferObject <= 0)
         {
             throw new InvalidOperationException("Vertex buffer object is not initialized.");
         }
         
-        if (gameObject.VertexArrayObject > 0)
+        if (sceneObject.VertexArrayObject > 0)
         {
             throw new InvalidOperationException("Vertex array object is already initialized.");
         }
         
-        GL.BindBuffer(BufferTarget.ArrayBuffer, gameObject.VertexBufferObject);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, sceneObject.VertexBufferObject);
 
-        gameObject.VertexArrayObject = GL.GenVertexArray();
+        sceneObject.VertexArrayObject = GL.GenVertexArray();
         
-        GL.BindVertexArray(gameObject.VertexArrayObject);
+        GL.BindVertexArray(sceneObject.VertexArrayObject);
 
-        var shader = gameObject.Material.Shader;
+        var shader = sceneObject.Material.Shader;
         
         var positionLocation = shader.GetAttributeLocation("aPos");
         GL.EnableVertexAttribArray(positionLocation);
@@ -93,30 +93,30 @@ public static class GameObjectExtensions
     }
     
     /// <summary>
-    /// Generates a VAO for a game object with position-normal-texture VBO format.
+    /// Generates a VAO for a scene object with position-normal-texture VBO format.
     /// </summary>
-    /// <param name="gameObject">A game object instance.</param>
+    /// <param name="sceneObject">A scene object instance.</param>
     /// <exception cref="InvalidOperationException">When vertex object buffer is not initialized yet.</exception>
     /// <exception cref="InvalidOperationException">When vertex array object is already initialized.</exception>
-    public static void GenerateVertexArrayObjectForPosNormTexVbo(this IGameObject gameObject)
+    public static void GenerateVertexArrayObjectForPosNormTexVbo(this ISceneObject sceneObject)
     {
-        if (gameObject.VertexBufferObject <= 0)
+        if (sceneObject.VertexBufferObject <= 0)
         {
             throw new InvalidOperationException("Vertex buffer object is not initialized.");
         }
         
-        if (gameObject.VertexArrayObject > 0)
+        if (sceneObject.VertexArrayObject > 0)
         {
             throw new InvalidOperationException("Vertex array object is already initialized.");
         }
         
-        GL.BindBuffer(BufferTarget.ArrayBuffer, gameObject.VertexBufferObject);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, sceneObject.VertexBufferObject);
 
-        gameObject.VertexArrayObject = GL.GenVertexArray();
+        sceneObject.VertexArrayObject = GL.GenVertexArray();
         
-        GL.BindVertexArray(gameObject.VertexArrayObject);
+        GL.BindVertexArray(sceneObject.VertexArrayObject);
 
-        var shader = gameObject.Material.Shader;
+        var shader = sceneObject.Material.Shader;
         
         var positionLocation = shader.GetAttributeLocation("aPos");
         GL.EnableVertexAttribArray(positionLocation);

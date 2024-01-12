@@ -27,10 +27,10 @@ public class DefaultShader : IShader
     }
     
     
-    public void Use(Scene scene, IGameObject gameObject)
+    public void Use(Scene scene, ISceneObject sceneObject)
     {
         var camera = scene.Camera;
-        var material = gameObject.Material;
+        var material = sceneObject.Material;
         
         material.DiffuseMap.Use(TextureUnit.Texture0);
         material.SpecularMap.Use(TextureUnit.Texture1);
@@ -48,7 +48,7 @@ public class DefaultShader : IShader
         _shader.SetMatrix4("view", camera.GetViewMatrix());
         _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
         _shader.SetVector3("viewPos", camera.Position);
-        _shader.SetMatrix4("model", gameObject.ModelMatrix);
+        _shader.SetMatrix4("model", sceneObject.ModelMatrix);
         
         /*
            Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index

@@ -9,10 +9,10 @@ using LightsTestTk.Models.Materials;
 /// <summary>
 /// Cube.
 /// </summary>
-public class Cube : IGameObject, IRenderable
+public class Cube : ISceneObject, IRenderable
 {
-    public IGameObject? Parent { get; set; }
-    public IList<IGameObject> Children { get; }
+    public ISceneObject? Parent { get; set; }
+    public IList<ISceneObject> Children { get; }
     
     public Vector3 Position { get; set; }
 
@@ -94,7 +94,7 @@ public class Cube : IGameObject, IRenderable
         
         Position = new Vector3();
         
-        Children = new List<IGameObject>();
+        Children = new List<ISceneObject>();
     }
     
     

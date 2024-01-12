@@ -25,16 +25,16 @@ public class LampShader : IShader
     }
     
     
-    public void Use(Scene scene, IGameObject gameObject)
+    public void Use(Scene scene, ISceneObject sceneObject)
     {
         var camera = scene.Camera;
         
         _shader.Use();
         
-        _shader.SetVector3("color", gameObject.Material.Color);
+        _shader.SetVector3("color", sceneObject.Material.Color);
         _shader.SetMatrix4("view", camera.GetViewMatrix());
         _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
         _shader.SetMatrix4("model",
-            Matrix4.CreateScale(0.2f) * gameObject.ModelMatrix);
+            Matrix4.CreateScale(0.2f) * sceneObject.ModelMatrix);
     }
 }

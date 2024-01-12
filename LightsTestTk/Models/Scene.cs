@@ -10,13 +10,13 @@ using LightsTestTk.Models.Materials;
 /// <summary>
 /// Scene is the parent for all game objects.
 /// </summary>
-public class Scene : IGameObject, IRenderable
+public class Scene : ISceneObject, IRenderable
 {
     /// <summary>
     /// Scene cannot have a parent.
     /// </summary>
     /// <exception cref="InvalidOperationException">When a scene parent is going to be set.</exception>
-    public IGameObject? Parent
+    public ISceneObject? Parent
     {
         get => null;
         set => throw new InvalidOperationException("Scene cannot have a parent.");
@@ -25,7 +25,7 @@ public class Scene : IGameObject, IRenderable
     /// <summary>
     /// All children of the scene.
     /// </summary>
-    public IList<IGameObject> Children { get; }
+    public IList<ISceneObject> Children { get; }
 
     public IMaterial Material { get; }
 
@@ -58,7 +58,6 @@ public class Scene : IGameObject, IRenderable
     public Skybox? Skybox { get; set; }
     
     public DirectionalLight DirectionalLight = new DirectionalLight();
-    //public SpotLight SpotLight = new SpotLight();
     
     public readonly int MaxPointLights = Defaults.DefaultMaxPointLights;
     public readonly IList<SpotLight> PointLights = new List<SpotLight>();
@@ -82,7 +81,7 @@ public class Scene : IGameObject, IRenderable
         Camera = camera ?? throw new ArgumentNullException(nameof(camera));
         Material = new NullMaterial();
         ModelMatrix = Matrix4.Identity;
-        Children = new List<IGameObject>();
+        Children = new List<ISceneObject>();
     }
 
     

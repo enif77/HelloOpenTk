@@ -25,11 +25,11 @@ public class SkyboxShader : IShader
     }
     
     
-    public void Use(Scene scene, IGameObject gameObject)
+    public void Use(Scene scene, ISceneObject sceneObject)
     {
         var camera = scene.Camera;
         
-        gameObject.Material.DiffuseMap.Use(TextureUnit.Texture0);
+        sceneObject.Material.DiffuseMap.Use(TextureUnit.Texture0);
         
         _shader.Use();
         
@@ -37,6 +37,6 @@ public class SkyboxShader : IShader
         
         _shader.SetMatrix4("view", camera.GetViewMatrix());
         _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-        _shader.SetMatrix4("model", gameObject.ModelMatrix);
+        _shader.SetMatrix4("model", sceneObject.ModelMatrix);
     }
 }

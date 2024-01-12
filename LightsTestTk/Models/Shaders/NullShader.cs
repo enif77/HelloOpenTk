@@ -11,7 +11,7 @@ public class NullShader : IShader
     }
     
     
-    public void Use(Scene scene, IGameObject gameObject)
+    public void Use(Scene scene, ISceneObject sceneObject)
     {
         // Do nothing.
     }

@@ -3,32 +3,32 @@ namespace LightsTestTk.Models;
 using OpenTK.Mathematics;
 
 /// <summary>
-/// Generic interface for all game objects.
+/// Generic interface for all scene objects.
 /// </summary>
-public interface IGameObject
+public interface ISceneObject
 {
     /// <summary>
-    /// This object's parent.
+    /// This scene object's parent.
     /// </summary>
-    IGameObject? Parent { get; set; }
+    ISceneObject? Parent { get; set; }
     
     /// <summary>
-    /// This game object's children.
+    /// This scene object's children.
     /// </summary>
-    IList<IGameObject> Children { get; }
+    IList<ISceneObject> Children { get; }
     
     /// <summary>
-    /// A material used by this object.
+    /// A material used by this scene object.
     /// </summary>
     IMaterial Material { get; }
     
     /// <summary>
-    /// Position relative to the parent.
+    /// Position of this scene object relative to the parent.
     /// </summary>
     Vector3 Position { get; set; }
     
     /// <summary>
-    /// Model matrix of the object.
+    /// Model matrix of tis scene object.
     /// Should be updated before rendering.
     /// </summary>
     Matrix4 ModelMatrix { get; set; }
