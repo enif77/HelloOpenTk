@@ -26,22 +26,12 @@ public class Game
         var scene = new Scene(
             new Camera(Vector3.UnitZ * 3, width / (float)height));
         
-        #region Shaders
-        
-        scene.AddShader(new NullShader());
-        scene.AddShader(new SkyboxShader());
-        scene.AddShader(new LampShader());
-        scene.AddShader(new DefaultShader());
-        
-        #endregion
-        
-        
         #region Skybox
         
         var skybox = new Skybox(
             new SimpleTextureMaterial(
                 Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
-                scene.Shaders["skybox"]));
+                new SkyboxShader()));
         
         skybox.GenerateVertexObjectBuffer();
         skybox.GenerateVertexArrayObjectForPosTexVbo();
@@ -58,7 +48,7 @@ public class Game
         var cubeMaterial = new Material(
             Texture.LoadFromFile("Resources/Textures/container2.png"),
             Texture.LoadFromFile("Resources/Textures/container2_specular.png"),
-            scene.Shaders["cube"]);
+            new DefaultShader());
         
         scene.AddChild(CreateCube(cubeMaterial, new Vector3(0.0f, 0.0f, 0.0f)));
         scene.AddChild(CreateCube(cubeMaterial, new Vector3(2.0f, 5.0f, -15.0f)));
@@ -75,6 +65,8 @@ public class Game
         
         
         #region Lamps
+
+        var lapShader = new LampShader();
         
         scene.CreatePointLight(new Vector3(0.7f, 0.2f, 2.0f));
         scene.CreatePointLight(new Vector3(2.3f, -3.3f, -4.0f));
@@ -84,11 +76,11 @@ public class Game
         
         var lampMaterial = new SimpleColorMaterial(
             new Vector3(1.0f, 1.0f, 1.0f),
-            scene.Shaders["lamp"]);
+            lapShader);
         
         var redLampMaterial = new SimpleColorMaterial(
             new Vector3(1.0f, 0.0f, 0.0f),
-            scene.Shaders["lamp"]);
+            lapShader);
 
         var lampId = 0;
         foreach (var pointLight in scene.PointLights)

@@ -80,19 +80,19 @@ public static class SceneExtensions
         return pointLight;
     }
 
-    /// <summary>
-    /// Adds a shader to the scene.
-    /// </summary>
-    /// <param name="scene">A scene.</param>
-    /// <param name="shader">An IShader instance.</param>
-    /// <exception cref="InvalidOperationException">If a shader with the shader.Name name already exists in the shaders collection.</exception>
-    /// <exception cref="ArgumentNullException">If the shader is null.</exception>
-    public static void AddShader(this Scene scene, IShader shader)
-    {
-        ArgumentNullException.ThrowIfNull(shader);
-        if (scene.Shaders.TryAdd(shader.Name, shader) == false)
-        {
-            throw new InvalidOperationException($"Shader with the '{shader.Name}' name already exists.");
-        }
-    }
+    // /// <summary>
+    // /// Adds a shader to the scene.
+    // /// </summary>
+    // /// <param name="scene">A scene.</param>
+    // /// <param name="shader">An IShader instance.</param>
+    // /// <exception cref="InvalidOperationException">If a shader with the shader.Name name already exists in the shaders collection.</exception>
+    // /// <exception cref="ArgumentNullException">If the shader is null.</exception>
+    // public static void AddShader(this Scene scene, IShader shader)
+    // {
+    //     ArgumentNullException.ThrowIfNull(shader);
+    //     if (scene.Shaders.TryAdd(shader.Name, shader) == false)
+    //     {
+    //         throw new InvalidOperationException($"Shader with the '{shader.Name}' name already exists.");
+    //     }
+    // }
 }

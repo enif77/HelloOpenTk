@@ -1,6 +1,7 @@
 namespace LightsTestTk.Models;
 
 using OpenTK.Mathematics;
+
 using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
 
@@ -45,18 +46,25 @@ public class Scene : ISceneObject, IRenderable
         
         set => _camera = value ?? throw new InvalidOperationException("Scene must have a camera.");
     }
-
-
-    /// <summary>
-    /// All known shaders used in the scene.
-    /// </summary>
-    public readonly Dictionary<string, IShader> Shaders = new();
     
+    /// <summary>
+    /// An optional skybox used by this scene.
+    /// </summary>
     public Skybox? Skybox { get; set; }
     
-    public DirectionalLight DirectionalLight = new DirectionalLight();
+    /// <summary>
+    /// A directional light used by this scene.
+    /// </summary>
+    public readonly DirectionalLight DirectionalLight = new DirectionalLight();
     
+    /// <summary>
+    /// The maximum number of point lights supported by this scene.
+    /// </summary>
     public readonly int MaxPointLights = Defaults.DefaultMaxPointLights;
+    
+    /// <summary>
+    /// Point lights used by this scene.
+    /// </summary>
     public readonly IList<SpotLight> PointLights = new List<SpotLight>();
     
     
