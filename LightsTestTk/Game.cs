@@ -5,21 +5,22 @@ using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
 using LightsTestTk.Models.Shaders;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace LightsTestTk;
 
-public class Game : IUpdateable, IRenderable
+public class Game
 {
     private Scene? _scene;
     
-    private SpotLight _spotLight;
+    private SpotLight? _spotLight;
     private readonly List<Cube> _cubes = new();
     
     
     public Camera Camera => _scene?.Camera ?? throw new InvalidOperationException("The scene is not initialized.");
     
     
-    public void Initialize(int width, int height)
+    public bool Initialize(int width, int height)
     {
         var scene = new Scene(
             new Camera(Vector3.UnitZ * 3, width / (float)height));
@@ -113,15 +114,72 @@ public class Game : IUpdateable, IRenderable
         #endregion
         
         _scene = scene;
+        
+        return true;
     }
     
     
-    public void Update(float deltaTime)
+    private bool _firstMove = true;
+    private Vector2 _lastPos;
+    
+    public bool Update(float deltaTime, KeyboardState keyboardState, MouseState mouseState)
     {
         if (_scene == null)
         {
             throw new InvalidOperationException("The scene is not initialized.");
         }
+     
+        if (keyboardState.IsKeyDown(Keys.Escape))
+        {
+            return false;
+        }
+        
+        
+        const float cameraSpeed = 1.5f;
+        const float sensitivity = 0.2f;
+
+        if (keyboardState.IsKeyDown(Keys.W))
+        {
+            _scene.Camera.Position += _scene.Camera.Front * cameraSpeed * deltaTime; // Forward
+        }
+        if (keyboardState.IsKeyDown(Keys.S))
+        {
+            _scene.Camera.Position -= _scene.Camera.Front * cameraSpeed * deltaTime; // Backwards
+        }
+        if (keyboardState.IsKeyDown(Keys.A))
+        {
+            _scene.Camera.Position -= _scene.Camera.Right * cameraSpeed * deltaTime; // Left
+        }
+        if (keyboardState.IsKeyDown(Keys.D))
+        {
+            _scene.Camera.Position += _scene.Camera.Right * cameraSpeed * deltaTime; // Right
+        }
+        if (keyboardState.IsKeyDown(Keys.Space))
+        {
+            _scene.Camera.Position += _scene.Camera.Up * cameraSpeed * deltaTime; // Up
+        }
+        if (keyboardState.IsKeyDown(Keys.LeftShift))
+        {
+            _scene.Camera.Position -= _scene.Camera.Up * cameraSpeed * deltaTime; // Down
+        }
+
+        var mouse = mouseState;
+
+        if (_firstMove)
+        {
+            _lastPos = new Vector2(mouse.X, mouse.Y);
+            _firstMove = false;
+        }
+        else
+        {
+            var deltaX = mouse.X - _lastPos.X;
+            var deltaY = mouse.Y - _lastPos.Y;
+            _lastPos = new Vector2(mouse.X, mouse.Y);
+
+            _scene.Camera.Yaw += deltaX * sensitivity;
+            _scene.Camera.Pitch -= deltaY * sensitivity;
+        }
+        
         
         // Update the spot light bound to the camera.
         _spotLight.Position = _scene.Camera.Position;
@@ -145,6 +203,8 @@ public class Game : IUpdateable, IRenderable
                 cubeIndex++;    
             }
         }
+        
+        return true;
     }
     
     

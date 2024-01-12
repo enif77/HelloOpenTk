@@ -1,24 +1,16 @@
-namespace LightsTestTk;
-
 using System.Runtime.InteropServices;
 
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
 
-// In this tutorial we focus on how to set up a scene with multiple lights, both of different types but also
-// with several point lights
+namespace LightsTestTk;
+
 public class Window : GameWindow
 {
     private int _viewportSizeScaleFactor = 1;
-    
     private readonly Game _game;
     
-    private bool _firstMove = true;
-    private Vector2 _lastPos;
-
     
     public Window(
         GameWindowSettings gameWindowSettings,
@@ -34,7 +26,10 @@ public class Window : GameWindow
     {
         base.OnLoad();
         
-        _game.Initialize(Size.X, Size.Y);
+        if (_game.Initialize(Size.X, Size.Y) == false)
+        {
+            Close();
+        }
         
         _viewportSizeScaleFactor = Program.Settings.ViewportSizeScaleFactor;
         
@@ -73,62 +68,14 @@ public class Window : GameWindow
         {
             return;
         }
-
-        var input = KeyboardState;
-
-        if (input.IsKeyDown(Keys.Escape))
+        
+        if (_game.Update((float)e.Time, KeyboardState, MouseState) == false)
         {
             Close();
         }
-
-        const float cameraSpeed = 1.5f;
-        const float sensitivity = 0.2f;
-
-        if (input.IsKeyDown(Keys.W))
-        {
-            _game.Camera.Position += _game.Camera.Front * cameraSpeed * (float)e.Time; // Forward
-        }
-        if (input.IsKeyDown(Keys.S))
-        {
-            _game.Camera.Position -= _game.Camera.Front * cameraSpeed * (float)e.Time; // Backwards
-        }
-        if (input.IsKeyDown(Keys.A))
-        {
-            _game.Camera.Position -= _game.Camera.Right * cameraSpeed * (float)e.Time; // Left
-        }
-        if (input.IsKeyDown(Keys.D))
-        {
-            _game.Camera.Position += _game.Camera.Right * cameraSpeed * (float)e.Time; // Right
-        }
-        if (input.IsKeyDown(Keys.Space))
-        {
-            _game.Camera.Position += _game.Camera.Up * cameraSpeed * (float)e.Time; // Up
-        }
-        if (input.IsKeyDown(Keys.LeftShift))
-        {
-            _game.Camera.Position -= _game.Camera.Up * cameraSpeed * (float)e.Time; // Down
-        }
-
-        var mouse = MouseState;
-
-        if (_firstMove)
-        {
-            _lastPos = new Vector2(mouse.X, mouse.Y);
-            _firstMove = false;
-        }
-        else
-        {
-            var deltaX = mouse.X - _lastPos.X;
-            var deltaY = mouse.Y - _lastPos.Y;
-            _lastPos = new Vector2(mouse.X, mouse.Y);
-
-            _game.Camera.Yaw += deltaX * sensitivity;
-            _game.Camera.Pitch -= deltaY * sensitivity;
-        }
-        
-        _game.Update((float)e.Time);
     }
 
+    
     protected override void OnMouseWheel(MouseWheelEventArgs e)
     {
         base.OnMouseWheel(e);
@@ -136,6 +83,7 @@ public class Window : GameWindow
         _game.Camera.Fov -= e.OffsetY;
     }
 
+    
     protected override void OnResize(ResizeEventArgs e)
     {
         base.OnResize(e);
