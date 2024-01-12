@@ -175,7 +175,7 @@ public class Game
         
         
         // Update the spot light bound to the camera.
-        _spotLight.Position = _scene.Camera.Position;
+        _spotLight!.Position = _scene.Camera.Position;
         _spotLight.Direction = _scene.Camera.Front;
         
         var cubeIndex = 0;
@@ -183,18 +183,13 @@ public class Game
         {
             var model = Matrix4.CreateTranslation(cube.Position);
             
-            if (cube.Material is SimpleColorMaterial)
+            if (cube.Material is Material)
             {
-                cube.ModelMatrix = model;
-            }
-            else
-            {
-                var angle = 20.0f * cubeIndex;
-                model = model * Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), angle);
-                cube.ModelMatrix = model;
-           
+                model *= Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), 20.0f * cubeIndex);
                 cubeIndex++;    
             }
+            
+            cube.ModelMatrix = model;
         }
         
         return true;
