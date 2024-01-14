@@ -62,6 +62,8 @@ public class Game
         scene.AddChild(CreateCube(cubeMaterial, new Vector3(1.5f, 0.2f, -1.5f)));
         scene.AddChild(CreateCube(cubeMaterial, new Vector3(-1.3f, 1.0f, -1.5f)));
         
+        _cubes[1].Scale = 2.5f;
+        
         #endregion
         
         
@@ -82,7 +84,7 @@ public class Game
         var redLampMaterial = new SimpleColorMaterial(
             new Vector3(1.0f, 0.0f, 0.0f),
             lapShader);
-
+        
         var lampId = 0;
         foreach (var pointLight in scene.PointLights)
         {
@@ -107,6 +109,50 @@ public class Game
         _spotLight.Diffuse = new Vector3(0.0f, 1.0f, 0.0f);
         
         #endregion
+        
+        
+        #region sub-cubes
+       
+        var subCube = new Cube()
+        {
+            Material = new SimpleColorMaterial(
+                new Vector3(1.0f, 1.0f, 0.0f),
+                lapShader),
+            Position = new Vector3(2, 0, 0),
+            Scale = 0.5f
+        };
+        
+        subCube.GenerateVertexObjectBuffer();
+        subCube.GenerateVertexArrayObjectForPosNormTexVbo();
+            
+        _cubes.Add(subCube);
+        
+        subCube.Parent = _cubes[1];
+        _cubes[1].AddChild(subCube);
+        
+        
+        var subCube2 = new Cube()
+        {
+            Material = new SimpleColorMaterial(
+                new Vector3(1.0f, 0.0f, 1.0f),
+                lapShader),
+            Position = new Vector3(-2, 0, 0),
+            Scale = 0.5f
+        };
+        
+        subCube2.SetRotationX(MathHelper.DegreesToRadians(45));
+        subCube2.SetRotationZ(MathHelper.DegreesToRadians(45));
+        
+        subCube2.GenerateVertexObjectBuffer();
+        subCube2.GenerateVertexArrayObjectForPosNormTexVbo();
+            
+        _cubes.Add(subCube2);
+        
+        subCube2.Parent = _cubes[1];
+        _cubes[1].AddChild(subCube2);
+        
+        #endregion
+        
         
         _scene = scene;
         
