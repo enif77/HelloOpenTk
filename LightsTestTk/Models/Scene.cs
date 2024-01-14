@@ -3,6 +3,7 @@ namespace LightsTestTk.Models;
 using OpenTK.Mathematics;
 
 using LightsTestTk.Models.Lights;
+using LightsTestTk.Models.SceneObjects;
 
 /// <summary>
 /// Scene is the parent for all game objects.

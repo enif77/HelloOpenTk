@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 namespace LightsTestTk.Extensions;
 
 using LightsTestTk.Models;
+using LightsTestTk.Models.SceneObjects;
 
 /// <summary>
 /// Scene related extensions.

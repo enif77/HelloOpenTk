@@ -1,4 +1,4 @@
-namespace LightsTestTk.Models;
+namespace LightsTestTk.Models.SceneObjects;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;

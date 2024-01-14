@@ -28,6 +28,16 @@ public interface ISceneObject : IUpdatable, IRenderable
     Vector3 Position { get; set; }
     
     /// <summary>
+    /// Rotation of this scene object in counter-clockwise angles in radians.
+    /// </summary>
+    Vector3 Rotation { get; set; }
+    
+    /// <summary>
+    /// True, if this object needs model matrix update.
+    /// </summary>
+    bool NeedsModelMatrixUpdate { get; set; }
+    
+    /// <summary>
     /// Model matrix of tis scene object.
     /// Should be updated before rendering.
     /// </summary>

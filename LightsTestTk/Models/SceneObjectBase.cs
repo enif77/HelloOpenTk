@@ -11,7 +11,52 @@ public abstract class SceneObjectBase : ISceneObject
     public IList<ISceneObject> Children { get; } = new List<ISceneObject>();
 
     public IMaterial Material { get; set; } = new NullMaterial();
-    public Vector3 Position { get; set; } = Vector3.Zero;
+
+    private Vector3 _position = Vector3.Zero;
+    public Vector3 Position
+    {
+        get => _position;
+
+        set
+        {
+            _position = value;
+            NeedsModelMatrixUpdate = true;
+        }
+    }
+    
+    private Vector3 _rotation = Vector3.Zero;
+    public Vector3 Rotation
+    {
+        get => _rotation;
+
+        set
+        {
+            _rotation = value;
+            NeedsModelMatrixUpdate = true;
+        }
+    }
+    
+    private bool _needsModelMatrixUpdate = true;
+
+    public bool NeedsModelMatrixUpdate
+    {
+        get => _needsModelMatrixUpdate;
+
+        set
+        {
+            _needsModelMatrixUpdate = value;
+            if (value == false)
+            {
+                return;
+            }
+
+            foreach (var child in Children)
+            {
+                child.NeedsModelMatrixUpdate = true;
+            }
+        }
+    }
+    
     public Matrix4 ModelMatrix { get; set; } = Matrix4.Identity;
     
     
@@ -26,14 +71,20 @@ public abstract class SceneObjectBase : ISceneObject
     
     public virtual void Update(float deltaTime)
     {
+        if (NeedsModelMatrixUpdate)
+        {
+            ModelMatrix  = Matrix4.CreateTranslation(Position);
+            
+            ModelMatrix *= Matrix4.CreateRotationZ(Rotation.Z);
+            ModelMatrix *= Matrix4.CreateRotationX(Rotation.X);
+            ModelMatrix *= Matrix4.CreateRotationY(Rotation.Y);
+            
+            NeedsModelMatrixUpdate = false;
+        }
+
         foreach (var child in Children)
         {
-            if (child is not IUpdatable updatableChild)
-            {
-                continue;
-            }
-
-            updatableChild.Update(deltaTime);
+            child.Update(deltaTime);
         }
     }
 
@@ -41,12 +92,7 @@ public abstract class SceneObjectBase : ISceneObject
     {
         foreach (var child in Children)
         {
-            if (child is not IRenderable renderableChild)
-            {
-                continue;
-            }
-
-            renderableChild.Render();
+            child.Render();
         }
     }
 }

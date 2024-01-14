@@ -1,3 +1,5 @@
+using OpenTK.Mathematics;
+
 namespace LightsTestTk.Extensions;
 
 using OpenTK.Graphics.OpenGL4;
@@ -9,6 +11,36 @@ using LightsTestTk.Models;
 /// </summary>
 public static class SceneObjectExtensions
 {
+    /// <summary>
+    /// Sets rotation around X axis.
+    /// </summary>
+    /// <param name="sceneObject">A scene object.</param>
+    /// <param name="angle">An angle in radians.</param>
+    public static void SetRotationX(this ISceneObject sceneObject, float angle)
+    {
+        sceneObject.Rotation = new Vector3(angle, sceneObject.Rotation.Y, sceneObject.Rotation.Z);
+    }
+    
+    /// <summary>
+    /// Sets rotation around Y axis.
+    /// </summary>
+    /// <param name="sceneObject">A scene object.</param>
+    /// <param name="angle">An angle in radians.</param>
+    public static void SetRotationY(this ISceneObject sceneObject, float angle)
+    {
+        sceneObject.Rotation = new Vector3(sceneObject.Rotation.X, angle, sceneObject.Rotation.Z);
+    }
+    
+    /// <summary>
+    /// Sets rotation around Z axis.
+    /// </summary>
+    /// <param name="sceneObject">A scene object.</param>
+    /// <param name="angle">An angle in radians.</param>
+    public static void SetRotationZ(this ISceneObject sceneObject, float angle)
+    {
+        sceneObject.Rotation = new Vector3(sceneObject.Rotation.X, sceneObject.Rotation.Y, angle);
+    }
+    
     /// <summary>
     /// Try to get a scene from a scene object.
     /// </summary>

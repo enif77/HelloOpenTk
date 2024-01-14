@@ -8,6 +8,7 @@ using LightsTestTk.Models;
 using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.Materials;
 using LightsTestTk.Models.Shaders;
+using LightsTestTk.Models.SceneObjects;
 using LightsTestTk.Models.Textures;
 
 public class Game
@@ -178,19 +179,26 @@ public class Game
         _spotLight!.Position = _scene.Camera.Position;
         _spotLight.Direction = _scene.Camera.Front;
         
-        var cubeIndex = 0;
-        foreach (var cube in _cubes)
-        {
-            var model = Matrix4.CreateTranslation(cube.Position);
-            
-            if (cube.Material is Material)
-            {
-                model *= Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), 20.0f * cubeIndex);
-                cubeIndex++;    
-            }
-            
-            cube.ModelMatrix = model;
-        }
+        // var cubeIndex = 0;
+        // foreach (var cube in _cubes)
+        // {
+        //     var model = Matrix4.CreateTranslation(cube.Position);
+        //     
+        //     if (cube.Material is Material)
+        //     {
+        //         //model *= Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), 20.0f * cubeIndex);
+        //         
+        //         model *= Matrix4.CreateRotationZ(0.5f * 20.0f * cubeIndex);
+        //         model *= Matrix4.CreateRotationX(1.0f * 20.0f * cubeIndex);
+        //         model *= Matrix4.CreateRotationY(0.3f * 20.0f * cubeIndex);
+        //         
+        //         cubeIndex++;    
+        //     }
+        //     
+        //     cube.ModelMatrix = model;
+        // }
+        
+        _scene.Update(deltaTime);
         
         return true;
     }
@@ -209,10 +217,13 @@ public class Game
     
     private Cube CreateCube(IMaterial material, Vector3 position)
     {
+        var angle = 20.0f * _cubes.Count;
+        
         var cube = new Cube()
         {
             Material = material,
-            Position = position
+            Position = position,
+            Rotation = new Vector3(1.0f * angle, 0.3f * angle, 0.5f * angle)
         };
         
         cube.GenerateVertexObjectBuffer();
