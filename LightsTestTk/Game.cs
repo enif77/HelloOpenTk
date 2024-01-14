@@ -89,7 +89,8 @@ public class Game
             var lamp = new Cube()
             {
                 Material = (lampId == 3) ? redLampMaterial : lampMaterial,
-                Position = pointLight.Position
+                Position = pointLight.Position,
+                Scale = 0.2f
             };
         
             lamp.GenerateVertexObjectBuffer();
@@ -178,26 +179,7 @@ public class Game
         // Update the spot light bound to the camera.
         _spotLight!.Position = _scene.Camera.Position;
         _spotLight.Direction = _scene.Camera.Front;
-        
-        // var cubeIndex = 0;
-        // foreach (var cube in _cubes)
-        // {
-        //     var model = Matrix4.CreateTranslation(cube.Position);
-        //     
-        //     if (cube.Material is Material)
-        //     {
-        //         //model *= Matrix4.CreateFromAxisAngle(new Vector3(1.0f, 0.3f, 0.5f), 20.0f * cubeIndex);
-        //         
-        //         model *= Matrix4.CreateRotationZ(0.5f * 20.0f * cubeIndex);
-        //         model *= Matrix4.CreateRotationX(1.0f * 20.0f * cubeIndex);
-        //         model *= Matrix4.CreateRotationY(0.3f * 20.0f * cubeIndex);
-        //         
-        //         cubeIndex++;    
-        //     }
-        //     
-        //     cube.ModelMatrix = model;
-        // }
-        
+
         _scene.Update(deltaTime);
         
         return true;

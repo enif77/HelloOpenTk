@@ -12,6 +12,19 @@ public abstract class SceneObjectBase : ISceneObject
 
     public IMaterial Material { get; set; } = new NullMaterial();
 
+    private float _scale = 1.0f;
+
+    public float Scale
+    {
+        get => _scale;
+        
+        set
+        {
+            _scale = value;
+            NeedsModelMatrixUpdate = true;
+        }
+    }
+    
     private Vector3 _position = Vector3.Zero;
     public Vector3 Position
     {
@@ -73,12 +86,19 @@ public abstract class SceneObjectBase : ISceneObject
     {
         if (NeedsModelMatrixUpdate)
         {
-            ModelMatrix  = Matrix4.CreateTranslation(Position);
+            ModelMatrix = Matrix4.CreateScale(Scale);
+            
+            ModelMatrix *= Matrix4.CreateTranslation(Position);
             
             ModelMatrix *= Matrix4.CreateRotationZ(Rotation.Z);
             ModelMatrix *= Matrix4.CreateRotationX(Rotation.X);
             ModelMatrix *= Matrix4.CreateRotationY(Rotation.Y);
-            
+
+            if (Parent != null)
+            {
+                ModelMatrix *= Parent.ModelMatrix;
+            }
+
             NeedsModelMatrixUpdate = false;
         }
 

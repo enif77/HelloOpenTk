@@ -23,6 +23,11 @@ public interface ISceneObject : IUpdatable, IRenderable
     IMaterial Material { get; }
     
     /// <summary>
+    /// Scale of this scene object relative to the parent.
+    /// </summary>
+    float Scale { get; set; }
+    
+    /// <summary>
     /// Position of this scene object relative to the parent.
     /// </summary>
     Vector3 Position { get; set; }

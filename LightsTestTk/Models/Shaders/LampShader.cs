@@ -32,7 +32,6 @@ public class LampShader : IShader
         _shader.SetVector3("color", sceneObject.Material.Color);
         _shader.SetMatrix4("view", camera.GetViewMatrix());
         _shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-        _shader.SetMatrix4("model",
-            Matrix4.CreateScale(0.2f) * sceneObject.ModelMatrix);
+        _shader.SetMatrix4("model", sceneObject.ModelMatrix);
     }
 }
