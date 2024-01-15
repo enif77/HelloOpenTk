@@ -107,7 +107,7 @@ public class Game
         
         _spotLight = scene.CreateSpotLight(new Vector3(0.7f, 0.2f, 2.0f));
         _spotLight.Diffuse = new Vector3(0.0f, 1.0f, 0.0f);
-        _spotLight.Parent = scene!.Camera;
+        _spotLight.Parent = scene.Camera;
         scene.Camera.AddChild(_spotLight);
         
         #endregion

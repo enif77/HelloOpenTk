@@ -55,6 +55,7 @@ public class Scene : SceneObjectBase
     {
         Camera = camera ?? throw new ArgumentNullException(nameof(camera));
         Camera.Parent = this;
+        Children.Add(Camera);
         
         ModelMatrix = Matrix4.Identity;
     }

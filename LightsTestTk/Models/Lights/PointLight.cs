@@ -56,4 +56,33 @@ public class PointLight : SceneObjectBase, ILight
         Quadratic = 0.032f;
         QuadraticUniformName = $"pointLights[{Id}].quadratic";
     }
+    
+    
+    public override void Update(float deltaTime)
+    {
+        if (NeedsModelMatrixUpdate)
+        {
+            if (Parent != null)
+            {
+                // If we have a parent, we are bound to it.
+                Position = Parent.Position;
+                Rotation = Parent.Rotation;
+            }
+            
+            ModelMatrix *= Matrix4.CreateRotationZ(Rotation.Z);
+            ModelMatrix *= Matrix4.CreateRotationX(Rotation.X);
+            ModelMatrix *= Matrix4.CreateRotationY(Rotation.Y);
+
+            ModelMatrix *= Matrix4.CreateTranslation(Position);
+            
+            // We are already bound to the parent, so we don't need to multiply by the parent's model matrix.
+
+            NeedsModelMatrixUpdate = false;
+        }
+
+        foreach (var child in Children)
+        {
+            child.Update(deltaTime);
+        }
+    }
 }
