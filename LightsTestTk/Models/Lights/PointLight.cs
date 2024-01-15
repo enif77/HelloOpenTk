@@ -2,14 +2,14 @@ namespace LightsTestTk.Models.Lights;
 
 using OpenTK.Mathematics;
 
-public class PointLight : ILight
+public class PointLight : SceneObjectBase, ILight
 {
     /// <summary>
     /// The index of the light in the shader.
     /// </summary>
     public int Id { get; }
     
-    public Vector3 Position { get; set; }
+    // The Position property is inherited from SceneObjectBase class.
     public string PositionUniformName { get; }
     
     public Vector3 Ambient { get; set; }
