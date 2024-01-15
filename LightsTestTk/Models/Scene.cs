@@ -20,17 +20,11 @@ public class Scene : SceneObjectBase
         set => throw new InvalidOperationException("Scene cannot have a parent.");
     }
 
-    private Camera _camera;
-
     /// <summary>
     /// A primary camera for the scene.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown, if the value is going to be set to null.</exception>
-    public Camera Camera
-    {
-        get => _camera;
-        set => _camera = value ?? throw new InvalidOperationException("Scene must have a camera.");
-    }
+    public Camera Camera { get; }
     
     /// <summary>
     /// An optional skybox used by this scene.
@@ -60,15 +54,14 @@ public class Scene : SceneObjectBase
     public Scene(Camera camera)
     {
         Camera = camera ?? throw new ArgumentNullException(nameof(camera));
+        Camera.Parent = this;
+        
         ModelMatrix = Matrix4.Identity;
     }
 
 
     public override void Update(float deltaTime)
     {
-        // TODO: Make the camera a part of the scene, so it is updated with the rest of the scene objects.
-        Camera.Update(deltaTime);
-        
         Skybox?.Update(deltaTime);
         base.Update(deltaTime);
     }
