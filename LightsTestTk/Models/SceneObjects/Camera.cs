@@ -1,4 +1,4 @@
-namespace LightsTestTk.Models;
+namespace LightsTestTk.Models.SceneObjects;
 
 using OpenTK.Mathematics;
 
@@ -9,7 +9,7 @@ using OpenTK.Mathematics;
 
 // TL;DR: This is just one of many ways in which we could have set up the camera.
 // Check out the web version if you don't know why we are doing a specific thing or want to know more about the code.
-public class Camera
+public class Camera : SceneObjectBase
 {
     // Those vectors are directions pointing outwards from the camera to define how it rotated.
     private Vector3 _front = -Vector3.UnitZ;
@@ -33,8 +33,7 @@ public class Camera
         AspectRatio = aspectRatio;
     }
 
-    // The position of the camera
-    public Vector3 Position { get; set; }
+    // The position of the camera is inherited from the SceneObject class.
 
     // This is simply the aspect ratio of the viewport, used for the projection matrix.
     public float AspectRatio { private get; set; }
@@ -97,6 +96,36 @@ public class Camera
         return Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.01f, 100f);
     }
 
+    
+    public override void Update(float deltaTime)
+    {
+        if (NeedsModelMatrixUpdate)
+        {
+            // The view matrix gives us the rotation of the camera.
+            ModelMatrix = GetViewMatrix();
+
+            // We do not need to rotate the camera again - the view matrix is enough.
+            // ModelMatrix *= Matrix4.CreateRotationZ(Rotation.Z);
+            // ModelMatrix *= Matrix4.CreateRotationX(Rotation.X);
+            // ModelMatrix *= Matrix4.CreateRotationY(Rotation.Y);
+
+            ModelMatrix *= Matrix4.CreateTranslation(Position);
+            
+            if (Parent != null)
+            {
+                ModelMatrix *= Parent.ModelMatrix;
+            }
+
+            NeedsModelMatrixUpdate = false;
+        }
+
+        foreach (var child in Children)
+        {
+            child.Update(deltaTime);
+        }
+    }
+    
+    
     // This function is going to update the direction vertices using some of the math learned in the web tutorials.
     private void UpdateVectors()
     {
@@ -113,5 +142,10 @@ public class Camera
         // not be what you need for all cameras so keep this in mind if you do not want a FPS camera.
         _right = Vector3.Normalize(Vector3.Cross(_front, Vector3.UnitY));
         _up = Vector3.Normalize(Vector3.Cross(_right, _front));
+        
+        // Set the rotation angles based on the new direction vectors.
+        Rotation = new Vector3(_pitch, _yaw, 0f);
+        
+        NeedsModelMatrixUpdate = true;
     }
 }

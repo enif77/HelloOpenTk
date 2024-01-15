@@ -107,6 +107,8 @@ public class Game
         
         _spotLight = scene.CreateSpotLight(new Vector3(0.7f, 0.2f, 2.0f));
         _spotLight.Diffuse = new Vector3(0.0f, 1.0f, 0.0f);
+        _spotLight.Parent = scene!.Camera;
+        scene.Camera.AddChild(_spotLight);
         
         #endregion
         
@@ -220,12 +222,8 @@ public class Game
             _scene.Camera.Yaw += deltaX * sensitivity;
             _scene.Camera.Pitch -= deltaY * sensitivity;
         }
-        
-        
-        // Update the spot light bound to the camera.
-        _spotLight!.Position = _scene.Camera.Position;
-        _spotLight.Direction = _scene.Camera.Front;
 
+        
         _scene.Update(deltaTime);
         
         return true;

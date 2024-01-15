@@ -66,6 +66,9 @@ public class Scene : SceneObjectBase
 
     public override void Update(float deltaTime)
     {
+        // TODO: Make the camera a part of the scene, so it is updated with the rest of the scene objects.
+        Camera.Update(deltaTime);
+        
         Skybox?.Update(deltaTime);
         base.Update(deltaTime);
     }
