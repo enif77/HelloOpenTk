@@ -4,25 +4,21 @@ using OpenTK.Mathematics;
 
 public class SpotLight : PointLight
 {
-    public bool IsSpotLight { get; }
-    public string IsSpotLightUniformName { get; }
+    public override LightType LightType => LightType.Spot;
     
     public Vector3 Direction { get; set; }
-    public string DirectionUniformName { get; }
+    private string DirectionUniformName { get; }
     
     public float CutOff { get; set; }
-    public string CutOffUniformName { get; }
+    private string CutOffUniformName { get; }
     
     public float OuterCutOff { get; set; }
-    public string OuterCutOffUniformName { get; }
+    private string OuterCutOffUniformName { get; }
     
     
     public SpotLight(int id, bool isSpotLight = false)
         : base(id)
     {
-        IsSpotLight = isSpotLight;
-        IsSpotLightUniformName = $"pointLights[{Id}].isSpotLight";
-       
         Direction = -Vector3.UnitZ;
         DirectionUniformName = $"pointLights[{Id}].direction";
         
@@ -75,5 +71,15 @@ public class SpotLight : PointLight
         {
             child.Update(deltaTime);
         }
+    }
+
+
+    public override void SetUniforms(Shader shader)
+    {
+        base.SetUniforms(shader);
+        
+        shader.SetVector3(DirectionUniformName, Direction);
+        shader.SetFloat(CutOffUniformName, CutOff);
+        shader.SetFloat(OuterCutOffUniformName, OuterCutOff);
     }
 }

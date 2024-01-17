@@ -9,31 +9,36 @@ public class PointLight : SceneObjectBase, ILight
     /// </summary>
     public int Id { get; }
     
+    public virtual LightType LightType => LightType.Point;
+    private string LightTypeUniformName { get; }
+    
     // The Position property is inherited from SceneObjectBase class.
-    public string PositionUniformName { get; }
+    private string PositionUniformName { get; }
     
     public Vector3 Ambient { get; set; }
-    public string AmbientUniformName { get; }
+    private string AmbientUniformName { get; }
     
     public Vector3 Diffuse { get; set; }
-    public string DiffuseUniformName { get; }
+    private string DiffuseUniformName { get; }
     
     public Vector3 Specular { get; set; }
-    public string SpecularUniformName { get; }
+    private string SpecularUniformName { get; }
     
     public float Constant { get; set; }
-    public string ConstantUniformName { get; }
+    private string ConstantUniformName { get; }
     
     public float Linear { get; set; }
-    public string LinearUniformName { get; }
+    private string LinearUniformName { get; }
     
     public float Quadratic { get; set; }
-    public string QuadraticUniformName { get; }
+    private string QuadraticUniformName { get; }
     
     
     public PointLight(int id)
     {
         Id = id;
+        
+        LightTypeUniformName = $"pointLights[{Id}].lightType";
         
         Position = new Vector3();
         PositionUniformName = $"pointLights[{Id}].position";
@@ -84,5 +89,19 @@ public class PointLight : SceneObjectBase, ILight
         {
             child.Update(deltaTime);
         }
+    }
+
+    
+    public virtual void SetUniforms(Shader shader)
+    {
+        shader.SetInt(LightTypeUniformName, (int)LightType);
+        
+        shader.SetVector3(PositionUniformName, Position);
+        shader.SetVector3(AmbientUniformName, Ambient);
+        shader.SetVector3(DiffuseUniformName, Diffuse);
+        shader.SetVector3(SpecularUniformName, Specular);
+        shader.SetFloat(ConstantUniformName, Constant);
+        shader.SetFloat(LinearUniformName, Linear);
+        shader.SetFloat(QuadraticUniformName, Quadratic);
     }
 }

@@ -55,58 +55,12 @@ public class DefaultShader : IShader
         */
         
         // Directional light
-        UpdateDirectionalLightUniforms(scene.DirectionalLight);
+        scene.DirectionalLight.SetUniforms(_shader);
 
         // Point lights
         foreach (var pointLight in scene.PointLights)
         {
-            //UpdatePointLightUniforms(pointLight);
-            UpdateSpotLightUniforms((SpotLight)pointLight);
+            pointLight.SetUniforms(_shader);
         }
-
-        // // Spot light
-        // scene.SpotLight.Position = camera.Position;
-        // scene.SpotLight.Direction = camera.Front;
-        // UpdateSpotLightUniforms(scene.SpotLight);
-    }
-    
-    
-    private void UpdateSpotLightUniforms(SpotLight spotLight)
-    {
-        _shader.SetInt(spotLight.IsSpotLightUniformName, spotLight.IsSpotLight ? 1 : 0);
-        
-        _shader.SetVector3(spotLight.PositionUniformName, spotLight.Position);
-        _shader.SetVector3(spotLight.AmbientUniformName, spotLight.Ambient);
-        _shader.SetVector3(spotLight.DiffuseUniformName, spotLight.Diffuse);
-        _shader.SetVector3(spotLight.SpecularUniformName, spotLight.Specular);
-        _shader.SetFloat(spotLight.ConstantUniformName, spotLight.Constant);
-        _shader.SetFloat(spotLight.LinearUniformName, spotLight.Linear);
-        _shader.SetFloat(spotLight.QuadraticUniformName, spotLight.Quadratic);
-
-        if (spotLight.IsSpotLight)
-        {
-            _shader.SetVector3(spotLight.DirectionUniformName, spotLight.Direction);
-            _shader.SetFloat(spotLight.CutOffUniformName, spotLight.CutOff);
-            _shader.SetFloat(spotLight.OuterCutOffUniformName, spotLight.OuterCutOff);
-        }
-    }
-
-    private void UpdateDirectionalLightUniforms(DirectionalLight directionalLight)
-    {
-        _shader.SetVector3(directionalLight.DirectionUniformName, directionalLight.Direction);
-        _shader.SetVector3(directionalLight.AmbientUniformName, directionalLight.Ambient);
-        _shader.SetVector3(directionalLight.DiffuseUniformName, directionalLight.Diffuse);
-        _shader.SetVector3(directionalLight.SpecularUniformName, directionalLight.Specular);
-    }
-
-    private void UpdatePointLightUniforms(PointLight pointLight)
-    {
-        _shader.SetVector3(pointLight.PositionUniformName, pointLight.Position);
-        _shader.SetVector3(pointLight.AmbientUniformName, pointLight.Ambient);
-        _shader.SetVector3(pointLight.DiffuseUniformName, pointLight.Diffuse);
-        _shader.SetVector3(pointLight.SpecularUniformName, pointLight.Specular);
-        _shader.SetFloat(pointLight.ConstantUniformName, pointLight.Constant);
-        _shader.SetFloat(pointLight.LinearUniformName, pointLight.Linear);
-        _shader.SetFloat(pointLight.QuadraticUniformName, pointLight.Quadratic);
     }
 }

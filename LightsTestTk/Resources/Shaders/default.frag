@@ -20,11 +20,14 @@ struct DirLight
 };
 uniform DirLight directionalLight;
 
+#define LIGHT_TYPE_DIRECTIONAL 1
+#define LIGHT_TYPE_POINT       2
+#define LIGHT_TYPE_SPOT        3
+
 // This is our pointlight where we need the position aswell as the constants defining the attenuation of the light.
 struct PointLight
 {
-    // If this is 1, then this is a spotlight, otherwise it is a point light.
-    int isSpotLight; 
+    int lightType; 
     
     vec3 position;
 
@@ -120,7 +123,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 
     // spotlight intensity
     float intensity = 1.0;
-    if (light.isSpotLight == 1)
+    if (light.lightType == LIGHT_TYPE_SPOT)
     {
         float theta     = dot(lightDir, normalize(-light.direction));
         float epsilon   = light.cutOff - light.outerCutOff;

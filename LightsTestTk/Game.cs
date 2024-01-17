@@ -263,8 +263,7 @@ public class Game : IGame
             
             scene.AddChild(lamp);
             
-            //var lampLight = CreatePointLight(scene, lampPosition);
-            var lampLight = new SpotLight(scene.PointLights.Count)
+            var lampLight = new PointLight(scene.PointLights.Count)
             {
                 Position = lampPosition
             };
