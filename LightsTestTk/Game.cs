@@ -59,6 +59,9 @@ public class Game : IGame
         #endregion
         
         
+        scene.AddLight(new DirectionalLight(scene.Lights.Count));
+        
+        
         #region Lamps
         
         CreateLamps(scene);
@@ -69,7 +72,7 @@ public class Game : IGame
         #region spot light
         
         _spotLight = CreateSpotLight(scene, new Vector3(0.7f, 0.2f, 2.0f));
-        scene.AddSpotLight(_spotLight, scene.Camera);
+        scene.AddLight(_spotLight, scene.Camera);
         
         #endregion
         
@@ -215,7 +218,7 @@ public class Game : IGame
 
     private SpotLight CreateSpotLight(Scene scene, Vector3 position)
     {
-        return new SpotLight(scene.PointLights.Count, true)
+        return new SpotLight(scene.Lights.Count)
         {
             Parent = scene.Camera,
             
@@ -263,7 +266,7 @@ public class Game : IGame
             
             scene.AddChild(lamp);
             
-            var lampLight = new PointLight(scene.PointLights.Count)
+            var lampLight = new PointLight(scene.Lights.Count)
             {
                 Position = lampPosition
             };

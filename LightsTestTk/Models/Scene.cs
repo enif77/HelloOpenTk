@@ -2,7 +2,6 @@ namespace LightsTestTk.Models;
 
 using OpenTK.Mathematics;
 
-using LightsTestTk.Models.Lights;
 using LightsTestTk.Models.SceneObjects;
 
 /// <summary>
@@ -32,19 +31,14 @@ public class Scene : SceneObjectBase
     public Skybox? Skybox { get; set; }
     
     /// <summary>
-    /// A directional light used by this scene.
+    /// The maximum number of lights supported by this scene.
     /// </summary>
-    public readonly DirectionalLight DirectionalLight = new DirectionalLight();
+    public readonly int MaxLights = Defaults.DefaultMaxLights;
     
     /// <summary>
-    /// The maximum number of point lights supported by this scene.
+    /// Lights used in this scene.
     /// </summary>
-    public readonly int MaxPointLights = Defaults.DefaultMaxPointLights;
-    
-    /// <summary>
-    /// Point lights used by this scene.
-    /// </summary>
-    public readonly IList<ILight> PointLights = new List<ILight>();
+    public readonly IList<ILight> Lights = new List<ILight>();
     
     
     /// <summary>

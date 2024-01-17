@@ -4,6 +4,8 @@ using OpenTK.Mathematics;
 
 public class DirectionalLight : SceneObjectBase, ILight
 {
+    public int Id { get; }
+    
     public LightType LightType => LightType.Directional;
     public string LightTypeUniformName { get; }
     
@@ -20,26 +22,30 @@ public class DirectionalLight : SceneObjectBase, ILight
     private string SpecularUniformName { get; }
     
     
-    public DirectionalLight()
+    public DirectionalLight(int id)
     {
-        LightTypeUniformName = "directionalLight.lightType";
+        Id = id;
+        
+        LightTypeUniformName = $"lights[{Id}].lightType";
         
         Direction = new Vector3(0.2f, -1.0f, -0.3f);
-        DirectionUniformName = "directionalLight.direction";
+        DirectionUniformName = $"lights[{Id}].direction";
         
         Ambient = new Vector3(0.05f, 0.05f, 0.05f);
-        AmbientUniformName = "directionalLight.ambient";
+        AmbientUniformName = $"lights[{Id}].ambient";
         
         Diffuse = new Vector3(0.4f, 0.4f, 0.4f);
-        DiffuseUniformName = "directionalLight.diffuse";
+        DiffuseUniformName = $"lights[{Id}].diffuse";
         
         Specular = new Vector3(0.5f, 0.5f, 0.5f);
-        SpecularUniformName = "directionalLight.specular";
+        SpecularUniformName = $"lights[{Id}].specular";
     }
     
     
     public void SetUniforms(Shader shader)
     {
+        shader.SetInt(LightTypeUniformName, (int)LightType);
+        
         shader.SetVector3(DirectionUniformName, Direction);
         shader.SetVector3(AmbientUniformName, Ambient);
         shader.SetVector3(DiffuseUniformName, Diffuse);

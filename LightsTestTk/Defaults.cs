@@ -14,5 +14,5 @@ public class Defaults
     public const bool DefaultEnableVSync = true;
     public const bool DefaultEnableFullscreen = false;
     
-    public const int DefaultMaxPointLights = 16;
+    public const int DefaultMaxLights = 16;
 }

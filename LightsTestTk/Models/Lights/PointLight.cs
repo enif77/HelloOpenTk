@@ -38,28 +38,28 @@ public class PointLight : SceneObjectBase, ILight
     {
         Id = id;
         
-        LightTypeUniformName = $"pointLights[{Id}].lightType";
+        LightTypeUniformName = $"lights[{Id}].lightType";
         
         Position = new Vector3();
-        PositionUniformName = $"pointLights[{Id}].position";
+        PositionUniformName = $"lights[{Id}].position";
         
         Ambient = new Vector3(0.05f, 0.05f, 0.05f);
-        AmbientUniformName = $"pointLights[{Id}].ambient";
+        AmbientUniformName = $"lights[{Id}].ambient";
         
         Diffuse = new Vector3(0.8f, 0.8f, 0.8f);
-        DiffuseUniformName = $"pointLights[{Id}].diffuse";
+        DiffuseUniformName = $"lights[{Id}].diffuse";
         
         Specular = new Vector3(1.0f, 1.0f, 1.0f);
-        SpecularUniformName = $"pointLights[{Id}].specular";
+        SpecularUniformName = $"lights[{Id}].specular";
         
         Constant = 1.0f;
-        ConstantUniformName = $"pointLights[{Id}].constant";
+        ConstantUniformName = $"lights[{Id}].constant";
         
         Linear = 0.09f;
-        LinearUniformName = $"pointLights[{Id}].linear";
+        LinearUniformName = $"lights[{Id}].linear";
         
         Quadratic = 0.032f;
-        QuadraticUniformName = $"pointLights[{Id}].quadratic";
+        QuadraticUniformName = $"lights[{Id}].quadratic";
     }
     
     

@@ -36,9 +36,6 @@ public class DefaultShader : IShader
         
         _shader.SetInt("material.diffuse", 0);
         _shader.SetInt("material.specular", 1);
-        
-        _shader.SetInt("numPointLights", scene.PointLights.Count);
-        
         _shader.SetVector3("material.specular", material.Specular);
         _shader.SetFloat("material.shininess", material.Shininess);
         
@@ -54,13 +51,11 @@ public class DefaultShader : IShader
            by using 'Uniform buffer objects', but that is something we'll discuss in the 'Advanced GLSL' tutorial.
         */
         
-        // Directional light
-        scene.DirectionalLight.SetUniforms(_shader);
-
-        // Point lights
-        foreach (var pointLight in scene.PointLights)
+        _shader.SetInt("numLights", scene.Lights.Count);
+        
+        foreach (var light in scene.Lights)
         {
-            pointLight.SetUniforms(_shader);
+            light.SetUniforms(_shader);
         }
     }
 }

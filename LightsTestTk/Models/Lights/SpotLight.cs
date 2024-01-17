@@ -16,17 +16,17 @@ public class SpotLight : PointLight
     private string OuterCutOffUniformName { get; }
     
     
-    public SpotLight(int id, bool isSpotLight = false)
+    public SpotLight(int id)
         : base(id)
     {
         Direction = -Vector3.UnitZ;
-        DirectionUniformName = $"pointLights[{Id}].direction";
+        DirectionUniformName = $"lights[{Id}].direction";
         
         CutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f));
-        CutOffUniformName = $"pointLights[{Id}].cutOff";
+        CutOffUniformName = $"lights[{Id}].cutOff";
         
         OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f));
-        OuterCutOffUniformName = $"pointLights[{Id}].outerCutOff";
+        OuterCutOffUniformName = $"lights[{Id}].outerCutOff";
     }
     
     

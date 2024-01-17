@@ -1,7 +1,5 @@
 #version 330 core
 
-// In this tutorial it might seem like a lot is going on, but really we just combine the last tutorials, 3 pieces of source code into one
-// and added 3 extra point lights.
 struct Material
 {
     sampler2D diffuse;
@@ -9,23 +7,12 @@ struct Material
     float     shininess;
 };
 
-// This is the directional light struct, where we only need the directions
-struct DirLight
-{
-    vec3 direction;
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-uniform DirLight directionalLight;
 
 #define LIGHT_TYPE_DIRECTIONAL 1
 #define LIGHT_TYPE_POINT       2
 #define LIGHT_TYPE_SPOT        3
 
-// This is our pointlight where we need the position aswell as the constants defining the attenuation of the light.
-struct PointLight
+struct Light
 {
     int lightType; 
     
@@ -39,19 +26,19 @@ struct PointLight
     float linear;
     float quadratic;
 
-    // These are the properties of a spotlight, we need the direction of the light, the cutoff and the outer cutoff.
+    // This propertiy of a spotlight and a directional light.
     vec3  direction;
+
+    // These are the properties of a spotlight, we need the direction of the light, the cutoff and the outer cutoff.
     float cutOff;
     float outerCutOff;
 };
 
-// We have a total of 16 point lights now, so we define a preprossecor directive to tell the gpu the size of our point light array
-#define NR_POINT_LIGHTS 16
-uniform PointLight pointLights[NR_POINT_LIGHTS];
+#define NR_LIGHTS 16
+uniform Light lights[NR_LIGHTS];
 
 // This is the number of point lights we have, we need this to loop through the point lights in the main function.
-uniform int numPointLights;
-
+uniform int numLights;
 
 uniform Material material;
 uniform vec3 viewPos;
@@ -65,28 +52,32 @@ out vec4 FragColor;
 // Here we have some function prototypes, these are the signatures the gpu will use to know how the
 // parameters of each light calculation is layed out.
 // We have one function per light, since this makes it so we dont have to take up to much space in the main function.
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir);
+vec3 CalcPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {
-    // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    // phase 1: Directional lighting
-    vec3 result = CalcDirLight(directionalLight, norm, viewDir);
-    
-    // phase 2: Point and spot lights
-    for (int i = 0; i < clamp(numPointLights, 0, NR_POINT_LIGHTS); i++)
+    vec3 result = vec3(0.0);
+    for (int i = 0; i < clamp(numLights, 0, NR_LIGHTS); i++)
     {
-        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+        Light light = lights[i];
+        if (light.lightType == LIGHT_TYPE_DIRECTIONAL)
+        {
+            result += CalcDirLight(light, norm, viewDir);
+        }
+        else
+        {
+            result += CalcPointLight(light, norm, FragPos, viewDir);    
+        }
     }
     
     FragColor = vec4(result, 1.0);
 }
 
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
+vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(-light.direction);
     
@@ -105,7 +96,8 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     return (ambient + diffuse + specular);
 }
 
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+
+vec3 CalcPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
     

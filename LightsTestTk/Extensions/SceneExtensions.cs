@@ -1,6 +1,3 @@
-using LightsTestTk.Models.Lights;
-using OpenTK.Mathematics;
-
 namespace LightsTestTk.Extensions;
 
 using LightsTestTk.Models;
@@ -37,38 +34,37 @@ public static class SceneExtensions
     {
         ArgumentNullException.ThrowIfNull(light);
         
-        if (scene.PointLights.Count >= scene.MaxPointLights)
+        if (scene.Lights.Count >= scene.MaxLights)
         {
-            throw new InvalidOperationException($"Only {scene.MaxPointLights} point lights are supported.");
+            throw new InvalidOperationException($"Only {scene.MaxLights} lights are supported.");
         }
         
-        scene.PointLights.Add(light);
+        scene.Lights.Add(light);
         
         parent ??= scene;
         parent.AddChild(light);
     }
-
-    /// <summary>
-    /// Adds a spot light to the scene.
-    /// </summary>
-    /// <param name="scene">A scene.</param>
-    /// <param name="spotLight">A spot light.</param>
-    /// <param name="parent">An optional parent of the light.</param>
-    /// <exception cref="InvalidOperationException">If the MaxPointLights point lights are already in this scene.</exception>
-    public static void AddSpotLight(this Scene scene, SpotLight spotLight, ISceneObject? parent = default)
-    {
-        ArgumentNullException.ThrowIfNull(spotLight);
-        
-        if (scene.PointLights.Count >= scene.MaxPointLights)
-        {
-            throw new InvalidOperationException($"Only {scene.MaxPointLights} point lights are supported.");
-        }
-        
-        scene.PointLights.Add(spotLight);
-        
-        parent ??= scene;
-        parent.AddChild(spotLight);
-    }
+    
+    // /// Adds a spot light to the scene.
+    // /// </summary>
+    // /// <param name="scene">A scene.</param>
+    // /// <param name="spotLight">A spot light.</param>
+    // /// <param name="parent">An optional parent of the light.</param>
+    // /// <exception cref="InvalidOperationException">If the MaxPointLights point lights are already in this scene.</exception>
+    // public static void AddSpotLight(this Scene scene, SpotLight spotLight, ISceneObject? parent = default)
+    // {
+    //     ArgumentNullException.ThrowIfNull(spotLight);
+    //     
+    //     if (scene.Lights.Count >= scene.MaxLights)
+    //     {
+    //         throw new InvalidOperationException($"Only {scene.MaxLights} point lights are supported.");
+    //     }
+    //     
+    //     scene.Lights.Add(spotLight);
+    //     
+    //     parent ??= scene;
+    //     parent.AddChild(spotLight);
+    // }
 
     // /// <summary>
     // /// Adds a shader to the scene.
