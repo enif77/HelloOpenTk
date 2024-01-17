@@ -11,7 +11,7 @@ using LightsTestTk.Models.Shaders;
 using LightsTestTk.Models.SceneObjects;
 using LightsTestTk.Models.Textures;
 
-public class Game
+public class Game : IGame
 {
     private Scene? _scene;
     
@@ -241,6 +241,30 @@ public class Game
     }
     
     
+    public void UpdateCameraFov(float fovChange)
+    {
+        if (_scene == null)
+        {
+            throw new InvalidOperationException("The scene is not initialized.");
+        }
+        
+        _scene.Camera.Fov += fovChange;
+    }
+    
+    
+    public void SetCameraAspectRatio(float aspectRatio)
+    {
+        if (_scene == null)
+        {
+            throw new InvalidOperationException("The scene is not initialized.");
+        }
+        
+        _scene.Camera.AspectRatio = aspectRatio;
+    }
+    
+    
+    #region creators and generators 
+    
     private Cube CreateCube(IMaterial material, Vector3 position)
     {
         var angle = 20.0f * _cubes.Count;
@@ -259,4 +283,6 @@ public class Game
         
         return cube;
     }
+    
+    #endregion
 }

@@ -1,21 +1,23 @@
+namespace LightsTestTk;
+
 using System.Runtime.InteropServices;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
-namespace LightsTestTk;
+using LightsTestTk.Models;
 
 public class Window : GameWindow
 {
     private int _viewportSizeScaleFactor = 1;
-    private readonly Game _game;
+    private readonly IGame _game;
     
     
     public Window(
         GameWindowSettings gameWindowSettings,
         NativeWindowSettings nativeWindowSettings,
-        Game game)
+        IGame game)
         : base(gameWindowSettings, nativeWindowSettings)
     {
         _game = game ?? throw new ArgumentNullException(nameof(game));
@@ -80,7 +82,7 @@ public class Window : GameWindow
     {
         base.OnMouseWheel(e);
 
-        _game.Camera.Fov -= e.OffsetY;
+        _game.UpdateCameraFov(-e.OffsetY);
     }
 
     
@@ -89,6 +91,6 @@ public class Window : GameWindow
         base.OnResize(e);
 
         GL.Viewport(0, 0, Size.X, Size.Y);
-        _game.Camera.AspectRatio = Size.X / (float)Size.Y;
+        _game.SetCameraAspectRatio(Size.X / (float)Size.Y);
     }
 }
