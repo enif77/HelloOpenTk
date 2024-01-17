@@ -61,7 +61,7 @@ public class DefaultShader : IShader
         foreach (var pointLight in scene.PointLights)
         {
             //UpdatePointLightUniforms(pointLight);
-            UpdateSpotLightUniforms(pointLight);
+            UpdateSpotLightUniforms((SpotLight)pointLight);
         }
 
         // // Spot light

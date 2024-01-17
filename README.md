@@ -4,7 +4,7 @@ This repository contains a collection of demos and tests for OpenTK.
 
 ## TODO
 
-- Lights should be (nonrenderable?) scene objects.
+- Clean up the lights - make them more generic.
 - Separate geometry from scene objects.
 - Clean up the Game class.
 

@@ -2,7 +2,7 @@ namespace LightsTestTk.Models.Lights;
 
 using OpenTK.Mathematics;
 
-public class DirectionalLight : ILight
+public class DirectionalLight : SceneObjectBase, ILight
 {
     public Vector3 Direction { get; set; }
     public string DirectionUniformName { get; }

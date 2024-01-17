@@ -44,7 +44,7 @@ public class Scene : SceneObjectBase
     /// <summary>
     /// Point lights used by this scene.
     /// </summary>
-    public readonly IList<SpotLight> PointLights = new List<SpotLight>();
+    public readonly IList<ILight> PointLights = new List<ILight>();
     
     
     /// <summary>

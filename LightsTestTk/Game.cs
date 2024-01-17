@@ -25,19 +25,11 @@ public class Game : IGame
     public bool Initialize(int width, int height)
     {
         var scene = new Scene(
-            new Camera(Vector3.UnitZ * 3, width / (float)height));
+            CreateCamera(width, height));
         
         #region Skybox
         
-        var skybox = new Skybox(
-            new SimpleTextureMaterial(
-                Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
-                new SkyboxShader()));
-        
-        skybox.GenerateVertexObjectBuffer();
-        skybox.GenerateVertexArrayObjectForPosTexVbo();
-        
-        scene.AddSkybox(skybox);
+        scene.AddSkybox(CreateSkybox());
         
         #endregion
         
@@ -68,90 +60,23 @@ public class Game : IGame
         
         
         #region Lamps
-
-        var lapShader = new LampShader();
         
-        scene.CreatePointLight(new Vector3(0.7f, 0.2f, 2.0f));
-        scene.CreatePointLight(new Vector3(2.3f, -3.3f, -4.0f));
-        scene.CreatePointLight(new Vector3(-4.0f, 2.0f, -12.0f));
-        var redLight = scene.CreatePointLight(new Vector3(0.0f, 0.0f, -3.0f));
-        redLight.Diffuse = new Vector3(1.0f, 0.0f, 0.0f);
+        CreateLamps(scene);
         
-        var lampMaterial = new SimpleColorMaterial(
-            new Vector3(1.0f, 1.0f, 1.0f),
-            lapShader);
+        #endregion
         
-        var redLampMaterial = new SimpleColorMaterial(
-            new Vector3(1.0f, 0.0f, 0.0f),
-            lapShader);
         
-        var lampId = 0;
-        foreach (var pointLight in scene.PointLights)
-        {
-            var lamp = new Cube()
-            {
-                Material = (lampId == 3) ? redLampMaterial : lampMaterial,
-                Position = pointLight.Position,
-                Scale = 0.2f
-            };
+        #region spot light
         
-            lamp.GenerateVertexObjectBuffer();
-            lamp.GenerateVertexArrayObjectForPosNormTexVbo();
-            
-            _cubes.Add(lamp);
-            
-            scene.AddChild(lamp);
-            
-            lampId++;
-        }
-        
-        _spotLight = scene.CreateSpotLight(new Vector3(0.7f, 0.2f, 2.0f));
-        _spotLight.Diffuse = new Vector3(0.0f, 1.0f, 0.0f);
-        _spotLight.Parent = scene.Camera;
-        scene.Camera.AddChild(_spotLight);
+        _spotLight = CreateSpotLight(scene, new Vector3(0.7f, 0.2f, 2.0f));
+        scene.AddSpotLight(_spotLight, scene.Camera);
         
         #endregion
         
         
         #region sub-cubes
        
-        var subCube = new Cube()
-        {
-            Material = new SimpleColorMaterial(
-                new Vector3(1.0f, 1.0f, 0.0f),
-                lapShader),
-            Position = new Vector3(2, 0, 0),
-            Scale = 0.5f
-        };
-        
-        subCube.GenerateVertexObjectBuffer();
-        subCube.GenerateVertexArrayObjectForPosNormTexVbo();
-            
-        _cubes.Add(subCube);
-        
-        subCube.Parent = _cubes[1];
-        _cubes[1].AddChild(subCube);
-        
-        
-        var subCube2 = new Cube()
-        {
-            Material = new SimpleColorMaterial(
-                new Vector3(1.0f, 0.0f, 1.0f),
-                lapShader),
-            Position = new Vector3(-2, 0, 0),
-            Scale = 0.5f
-        };
-        
-        subCube2.SetRotationX(MathHelper.DegreesToRadians(45));
-        subCube2.SetRotationZ(MathHelper.DegreesToRadians(45));
-        
-        subCube2.GenerateVertexObjectBuffer();
-        subCube2.GenerateVertexArrayObjectForPosNormTexVbo();
-            
-        _cubes.Add(subCube2);
-        
-        subCube2.Parent = _cubes[1];
-        _cubes[1].AddChild(subCube2);
+        CreateSubCubes(_cubes[1]);
         
         #endregion
         
@@ -263,7 +188,141 @@ public class Game : IGame
     }
     
     
-    #region creators and generators 
+    #region creators and generators
+
+    private Camera CreateCamera(int windowWidth, int windowHeight)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(windowWidth);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(windowHeight);
+
+        return new Camera(Vector3.UnitZ * 3, windowWidth / (float)windowHeight);
+    }
+    
+    
+    private Skybox CreateSkybox()
+    {
+        var skybox = new Skybox(
+            new SimpleTextureMaterial(
+                Texture.LoadFromFile("Resources/Textures/SKYBOX.jpg"),
+                new SkyboxShader()));
+        
+        skybox.GenerateVertexObjectBuffer();
+        skybox.GenerateVertexArrayObjectForPosTexVbo();
+        
+        return skybox;
+    }
+    
+
+    private SpotLight CreateSpotLight(Scene scene, Vector3 position)
+    {
+        return new SpotLight(scene.PointLights.Count, true)
+        {
+            Parent = scene.Camera,
+            
+            Position = position,
+            Ambient = new Vector3(0.0f, 0.0f, 0.0f),
+            //Diffuse = new Vector3(1.0f, 1.0f, 1.0f),
+            Diffuse = new Vector3(0.0f, 1.0f, 0.0f),
+            Specular = new Vector3(1.0f, 1.0f, 1.0f),
+            Constant = 1.0f,
+            Linear = 0.09f,
+            Quadratic = 0.032f,
+            CutOff = MathF.Cos(MathHelper.DegreesToRadians(12.5f)),
+            OuterCutOff = MathF.Cos(MathHelper.DegreesToRadians(17.5f))
+        };
+    }
+
+
+    private readonly Vector3[] _lampPositions = new[]
+    {
+        new Vector3(0.7f, 0.2f, 2.0f),
+        new Vector3(2.3f, -3.3f, -4.0f),
+        new Vector3(-4.0f, 2.0f, -12.0f),
+        new Vector3(0.0f, 0.0f, -3.0f)
+    };
+    
+    private void CreateLamps(Scene scene)
+    {
+        var lampShader = new LampShader();
+        
+        var lampMaterial = new SimpleColorMaterial(
+            new Vector3(1.0f, 1.0f, 1.0f),
+            lampShader);
+        
+        var redLampMaterial = new SimpleColorMaterial(
+            new Vector3(1.0f, 0.0f, 0.0f),
+            lampShader);
+        
+        var lampId = 0;
+        foreach (var lampPosition in _lampPositions)
+        {
+            var lamp = CreateLamp((lampId == 3)
+                ? redLampMaterial
+                : lampMaterial,
+                lampPosition);
+            
+            scene.AddChild(lamp);
+            
+            //var lampLight = CreatePointLight(scene, lampPosition);
+            var lampLight = new SpotLight(scene.PointLights.Count)
+            {
+                Position = lampPosition
+            };
+            if (lampId == 3)
+            {
+                lampLight.Diffuse = new Vector3(1.0f, 0.0f, 0.0f);
+            }
+            
+            scene.AddLight(lampLight, lamp);
+            
+            lampId++;
+        }
+    }
+
+
+    private void CreateSubCubes(ISceneObject parentCube)
+    {
+        var shader = new LampShader();
+        
+        var subCube = new Cube()
+        {
+            Material = new SimpleColorMaterial(
+                new Vector3(1.0f, 1.0f, 0.0f),
+                shader),
+            Position = new Vector3(2, 0, 0),
+            Scale = 0.5f
+        };
+        
+        subCube.GenerateVertexObjectBuffer();
+        subCube.GenerateVertexArrayObjectForPosNormTexVbo();
+            
+        _cubes.Add(subCube);
+        
+        subCube.Parent = parentCube;
+        parentCube.AddChild(subCube);
+        
+        
+        var subCube2 = new Cube()
+        {
+            Material = new SimpleColorMaterial(
+                new Vector3(1.0f, 0.0f, 1.0f),
+                shader),
+            Position = new Vector3(-2, 0, 0),
+            Scale = 0.5f
+        };
+        
+        subCube2.SetRotationX(MathHelper.DegreesToRadians(45));
+        subCube2.SetRotationZ(MathHelper.DegreesToRadians(45));
+        
+        subCube2.GenerateVertexObjectBuffer();
+        subCube2.GenerateVertexArrayObjectForPosNormTexVbo();
+            
+        _cubes.Add(subCube2);
+        
+        subCube2.Parent = _cubes[1];
+        _cubes[1].AddChild(subCube2);
+    }
+    
     
     private Cube CreateCube(IMaterial material, Vector3 position)
     {
@@ -283,6 +342,24 @@ public class Game : IGame
         
         return cube;
     }
+
     
+    private Cube CreateLamp(IMaterial material, Vector3 position)
+    {
+        var lamp = new Cube()
+        {
+            Material = material,
+            Position = position,
+            Scale = 0.2f
+        };
+        
+        lamp.GenerateVertexObjectBuffer();
+        lamp.GenerateVertexArrayObjectForPosNormTexVbo();
+            
+        _cubes.Add(lamp);
+
+        return lamp;
+    }
+
     #endregion
 }
