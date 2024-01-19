@@ -1,4 +1,7 @@
-﻿namespace LightsTestTk;
+﻿using LightsTestTk.Extensions;
+using LightsTestTk.Models.Lights;
+
+namespace LightsTestTk;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
@@ -21,6 +24,17 @@ public static class Program
     private static void Main()
     {
         Configure();
+        
+        // var light = new PointLight(0);
+        //
+        // light.SetLightAttenuationConstants(5.0f);
+        // light.SetLightAttenuationConstants(3250.0f);
+        // light.SetLightAttenuationConstants(1000.0f);
+        // light.SetLightAttenuationConstants(500.0f);
+        // light.SetLightAttenuationConstants(90.0f);
+        // light.SetLightAttenuationConstants(100.0f);
+        //
+        // return;
         
         var nativeWindowSettings = new NativeWindowSettings()
         {
