@@ -273,6 +273,7 @@ public class Game : IGame
             if (lampId == 3)
             {
                 lampLight.Diffuse = new Vector3(1.0f, 0.0f, 0.0f);
+                lampLight.MaxDistance = 3.0f;
             }
             
             scene.AddLight(lampLight, lamp);

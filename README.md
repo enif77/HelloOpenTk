@@ -4,7 +4,7 @@ This repository contains a collection of demos and tests for OpenTK.
 
 ## TODO
 
-- Clean up the lights - make them more generic.
+- Point lights attenuation constants should be send to uniform as a vec3.
 - Separate geometry from scene objects.
 - Clean up the Game class.
 
