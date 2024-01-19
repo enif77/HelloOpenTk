@@ -33,8 +33,8 @@ public class PointLight : SceneObjectBase, ILight
     public float Quadratic { get; set; }
     private string QuadraticUniformName { get; }
     
-    public float MaxDistance { get; set; }
-    private string MaxDistanceUniformName { get; }
+    public float Range { get; set; }
+    private string RangeUniformName { get; }
 
 
     public PointLight(int id)
@@ -64,8 +64,8 @@ public class PointLight : SceneObjectBase, ILight
         Quadratic = 0.032f;
         QuadraticUniformName = $"lights[{Id}].quadratic";
             
-        MaxDistance = 100.0f;
-        MaxDistanceUniformName = $"lights[{Id}].maxDistance";
+        Range = 100.0f;
+        RangeUniformName = $"lights[{Id}].range";
     }
     
     
@@ -111,6 +111,6 @@ public class PointLight : SceneObjectBase, ILight
         shader.SetFloat(LinearUniformName, Linear);
         shader.SetFloat(QuadraticUniformName, Quadratic);
         
-        shader.SetFloat(MaxDistanceUniformName, MaxDistance);
+        shader.SetFloat(RangeUniformName, Range);
     }
 }

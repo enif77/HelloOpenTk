@@ -33,7 +33,7 @@ struct Light
     float cutOff;
     float outerCutOff;
     
-    float maxDistance;
+    float range;
 };
 
 #define NR_LIGHTS 16
@@ -108,7 +108,7 @@ vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir)
 vec3 CalcPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     float distance = length(light.position - fragPos);
-    if (distance > light.maxDistance)
+    if (distance > light.range)
     {
         return vec3(0.0);
     }
@@ -139,7 +139,7 @@ vec3 CalcPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir)
 vec3 CalcSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     float distance = length(light.position - fragPos);
-    if (distance > light.maxDistance)
+    if (distance > light.range)
     {
         return vec3(0.0);
     }
